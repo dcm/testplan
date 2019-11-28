@@ -1,6 +1,13 @@
 """
   PDF Export logic for test reports via ReportLab.
 """
+__all__ = (
+    'renderers',
+    'generate_path_for_tags',
+    'create_pdf',
+    'PDFExporter',
+    'TagFilteredPDFExporter',
+)
 
 import os
 import uuid

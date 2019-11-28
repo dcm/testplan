@@ -12,7 +12,7 @@ from testplan.common.utils.registry import Registry
 from testplan.common.utils.strings import split_text
 from testplan.testing.multitest.entries import base
 
-from .. import constants
+import testplan.exporters.testing.pdf.renderers.constants as constants
 from ..base import BaseRowRenderer, RowData
 from .baseUtils import get_matlib_plot, export_plot_to_image, format_image
 
