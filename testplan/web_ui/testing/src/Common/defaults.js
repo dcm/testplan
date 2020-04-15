@@ -10,13 +10,13 @@ export const DARK_GREY = '#ADADAD';
 export const BLACK = '#404040';
 
 export const BOTTOMMOST_ENTRY_CATEGORY = 'testcase';
-
-export const COLUMN_WIDTH = 22;
+export const COLUMN_WIDTH = 22;  // unit: em
+export const MIN_COLUMN_WIDTH = 180;  // unit: px
 export const INTERACTIVE_COL_WIDTH = 28;  // wider to fit interactive buttons
-
 export const INDENT_MULTIPLIER = 1.5;
 
 export const TOOLBAR_BUTTONS_BATCH = [
+  {name: 'cl', type: 'clock'},
   {name: 'pr', type: 'print'},
   {name: 'if', type: 'info-circle'},
   {name: 'qu', type: 'question-circle'},

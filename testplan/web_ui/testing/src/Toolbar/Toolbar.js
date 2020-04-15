@@ -273,7 +273,10 @@ class Toolbar extends Component {
     return (
       <Navbar light expand="md" className={css(styles.toolbar)}>
         <div className={css(styles.filterBox)}>
-          <FilterBox handleNavFilter={this.props.handleNavFilter}/>
+          <FilterBox
+            width={this.props.filterBoxWidth}
+            handleNavFilter={this.props.handleNavFilter}
+          />
         </div>
         <Collapse isOpen={this.state.isOpen} navbar className={toolbarStyle}>
           <Nav navbar className='ml-auto'>
@@ -417,6 +420,8 @@ Toolbar.propTypes = {
   status: PropTypes.oneOf(STATUS),
   /** Report object to display information */
   report: PropTypes.object,
+  /** Additional buttons added to toolbar */
+  extraButtons: PropTypes.array,
   /** Function to handle filter changing in the Filter box */
   updateFilterFunc: PropTypes.func,
   /** Function to handle toggle of displaying empty entries in the navbar */

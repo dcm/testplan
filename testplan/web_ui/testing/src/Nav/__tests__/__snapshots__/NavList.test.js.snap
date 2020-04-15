@@ -2,7 +2,7 @@
 
 exports[`NavList shallow renders and matches snapshot 1`] = `
 <Column
-  width={22}
+  width="22em"
 >
   <ListGroup
     className="buttonList_mjw45f"
@@ -18,6 +18,8 @@ exports[`NavList shallow renders and matches snapshot 1`] = `
       <NavEntry
         caseCountFailed={0}
         caseCountPassed={1}
+        displayTime={false}
+        executionTime={null}
         name="test"
         status="passed"
       />

@@ -24,6 +24,7 @@ describe('navUtils', () => {
       const props = {
         breadcrumbLength: 1,
         displayTags: false,
+        displayTime: false,
         displayEmpty: true,
         handleNavClick: jest.fn(),
         entries: TESTPLAN_REPORT.entries,

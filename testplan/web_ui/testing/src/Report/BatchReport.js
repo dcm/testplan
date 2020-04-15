@@ -3,6 +3,7 @@ import {StyleSheet, css} from 'aphrodite';
 import axios from 'axios';
 
 import Toolbar from '../Toolbar/Toolbar';
+import { TimeButton } from '../Toolbar/Buttons';
 import Nav from '../Nav/Nav';
 import {
   PropagateIndices,
@@ -28,17 +29,20 @@ class BatchReport extends React.Component {
     this.handleNavFilter = this.handleNavFilter.bind(this);
     this.updateFilter = this.updateFilter.bind(this);
     this.updateTagsDisplay = this.updateTagsDisplay.bind(this);
+    this.toggleTimeDisplay = this.toggleTimeDisplay.bind(this);
     this.updateDisplayEmpty = this.updateDisplayEmpty.bind(this);
     this.handleNavClick = this.handleNavClick.bind(this);
+    this.handleColumnResizing = this.handleColumnResizing.bind(this);
 
     this.state = {
-      navWidth: COLUMN_WIDTH,
+      navWidth: `${COLUMN_WIDTH}em`,
       report: null,
       testcaseUid: null,
       loading: false,
       error: null,
       filter: null,
       displayTags: false,
+      displayTime: false,
       displayEmpty: true,
       selectedUIDs: [],
     };
@@ -148,6 +152,19 @@ class BatchReport extends React.Component {
     this.setState({displayEmpty: displayEmpty});
   }
 
+  toggleTimeDisplay() {
+    this.setState(prevState => ({
+      displayTime: !prevState.displayTime
+    }));
+  }
+
+  /**
+   * Handle resizing event and update NavList & Center Pane.
+   */
+  handleColumnResizing(navWidth) {
+    this.setState({navWidth: navWidth});
+  }
+
   /**
    * Handle a navigation entry being clicked.
    */
@@ -168,7 +185,6 @@ class BatchReport extends React.Component {
     );
     const centerPane = GetCenterPane(
       this.state,
-      this.props,
       reportFetchMessage,
       this.props.match.params.uid,
       selectedEntries,
@@ -177,20 +193,28 @@ class BatchReport extends React.Component {
     return (
       <div className={css(styles.batchReport)}>
         <Toolbar
+          filterBoxWidth={this.state.navWidth}
           status={reportStatus}
           report={this.state.report}
           handleNavFilter={this.handleNavFilter}
           updateFilterFunc={this.updateFilter}
           updateEmptyDisplayFunc={this.updateDisplayEmpty}
           updateTagsDisplayFunc={this.updateTagsDisplay}
+          extraButtons={[<TimeButton
+            key="time-button"
+            toggleTimeDisplayCbk={this.toggleTimeDisplay}
+          />]}
         />
         <Nav
+          navListWidth={this.state.navWidth}
           report={this.state.report}
           selected={selectedEntries}
           filter={this.state.filter}
           displayEmpty={this.state.displayEmpty}
           displayTags={this.state.displayTags}
+          displayTime={this.state.displayTime}
           handleNavClick={this.handleNavClick}
+          handleColumnResizing={this.handleColumnResizing}
         />
         {centerPane}
       </div>
