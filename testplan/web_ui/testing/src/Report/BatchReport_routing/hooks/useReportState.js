@@ -1,9 +1,11 @@
-import React from 'react';
+// @ts-nocheck
+import { useMemo } from 'react';
 import _at from 'lodash/at';
-
-import ReportStateContext, { stateMaskMap } from '../state/ReportStateContext';
-import ReportActionsContext, {
-  actionsMaskMap
+import {
+  stateMaskMap, useReportStateContext
+} from '../state/ReportStateContext';
+import {
+  actionsMaskMap, useReportActionsContext
 } from '../state/ReportActionsContext';
 import { singletonToValue } from '../../../Common/utils';
 import { getObservedBitsGetter } from '../utils';
@@ -77,29 +79,27 @@ export const resolveSlicer = ({ slicer, ifFalse, ifUndef, elseFunc }) => (
  *     are non-singleton arrays, respectively
  */
 export default function useReportState(stateSlices, actionsSlices) {
-  const currentState = React.useContext(
-      // @ts-ignore
-      ReportStateContext, getObservedStateBits(stateSlices),
-    ),
-    boundActions = React.useContext(
-      // @ts-ignore
-      ReportActionsContext, getObservedActionsBits(actionsSlices),
-    ),
+  const observedStateBits = getObservedStateBits(stateSlices),
+    state = useReportStateContext(observedStateBits),
+    observedActionsBits = getObservedActionsBits(actionsSlices),
+    actions = useReportActionsContext(observedActionsBits),
     subState = singletonToValue(
       resolveSlicer({
-        slicer: stateSlices, ifFalse: null, ifUndef: [ currentState ],
-        // @ts-ignore
-        elseFunc: () => _at(currentState, stateSlices),
+        slicer: stateSlices,
+        ifFalse: null,
+        ifUndef: [ state ],
+        elseFunc: () => _at(state, stateSlices),
       })
     ),
     subActions = singletonToValue(
       resolveSlicer({
-        slicer: actionsSlices, ifFalse: null, ifUndef: [ boundActions ],
-        // @ts-ignore
-        elseFunc: () => _at(boundActions, actionsSlices),
+        slicer: actionsSlices,
+        ifFalse: null,
+        ifUndef: [ actions ],
+        elseFunc: () => _at(actions, actionsSlices),
       })
     );
-  return React.useMemo(
+  return useMemo(
     () => [ subState, subActions ],
     [ subState, subActions ])
     ;

@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 // @ts-nocheck
 import moxios from 'moxios';
-import { cleanup, renderHook } from 'react-hooks-testing-library';
+import { cleanup, renderHook } from '@testing-library/react-hooks';
 import useReportState from '../useReportState';
 
 jest.mock('../useReportState');

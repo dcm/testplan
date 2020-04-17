@@ -5,10 +5,10 @@ import { PropagateIndices } from '../../reportUtils';
 import useReportState from './useReportState';
 
 export default function useFetchReport(
-  reportUid, isDev = false, skipFetch = false, axiosInstance = null
+  reportUid, isDev = false, skipFetch = false
 ) {
   const [
-      [ apiBaseURL, apiHeaders ],
+      [ baseURL, headers ],
       [ setJsonReport, setLoading, setFetching, setFetchError ]
     ] = useReportState(
     [ 'api.baseURL', 'api.headers' ],
@@ -22,10 +22,9 @@ export default function useFetchReport(
     setLoadingCb = useCallback(setLoading, []),
     setFetchingCb = useCallback(setFetching, []),
     setFetchErrorCb = useCallback(setFetchError, []),
-    currAxiosInstance = useMemo(() => axiosInstance || Axios.create({
-      baseURL: apiBaseURL,
-      headers: apiHeaders,
-    }), [ axiosInstance, apiBaseURL, apiHeaders ]);
+    axiosInstance = useMemo(
+      () => Axios.create({ baseURL, headers }
+    ), [ baseURL, headers ]);
 
   const fetchRealReport = useCallback(() => {
     const fetchCanceller = Axios.CancelToken.source();
@@ -34,7 +33,7 @@ export default function useFetchReport(
       let isCancelled = false;
       try {
         setFetchingCb(true);
-        const document = await currAxiosInstance.get(`/reports/${reportUid}`, {
+        const document = await axiosInstance.get(`/reports/${reportUid}`, {
           cancelToken: fetchCanceller.token,
         });
         setFetchingCb(false);
@@ -58,7 +57,7 @@ export default function useFetchReport(
       fetchCanceller.cancel('Fetch cancelled due to component cleanup');
     };
   }, [
-    currAxiosInstance, reportUid, setLoadingCb, setFetchingCb, setJsonReportCb,
+    axiosInstance, reportUid, setLoadingCb, setFetchingCb, setJsonReportCb,
     setFetchErrorCb,
   ]);
 
@@ -95,5 +94,6 @@ export default function useFetchReport(
           : fetchRealReport();
     }
     return fetchRealReport();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ isDev, fetchRealReport, skipFetch ]);
 }

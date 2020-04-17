@@ -26,7 +26,7 @@ export default ({ entries }) => {
     );
   }).filter(e => !!e);
   return (
-    <Column width={COLUMN_WIDTH}>
+    <Column width={`${COLUMN_WIDTH}`}>
       <ListGroup className={css(navListStyles.buttonList)}>
         {items.length ? items : <EmptyListGroupItem/>}
       </ListGroup>

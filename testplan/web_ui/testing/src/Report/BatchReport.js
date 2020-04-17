@@ -15,7 +15,7 @@ import {
 import {COLUMN_WIDTH} from "../Common/defaults";
 
 const fakeReportAssertions =
-  require('../__tests__/fixtures/documents/fakeReportAssertions.json');
+  require('../__tests__/mocks/documents/fakeReportAssertions.json');
 
 /**
  * BatchReport component:

@@ -1,5 +1,4 @@
-import React from 'react';
-
+import React, { useContext, useReducer, useMemo, useCallback } from 'react';
 import ReportStateContext from './ReportStateContext';
 import ReportActionsContext from './ReportActionsContext';
 import * as uriQueryActions from './uriQueryActions';
@@ -82,19 +81,20 @@ const bindDispatchToActions = dispatchFunc => {
 
 /**
  * Makes children eligible for using the `useReportState` hook
- * @type {React.FunctionComponent<React.PropsWithChildren<any>>}
+ * @type {React.FunctionComponent<React.Children>}
  */
-export default function ReportStateProvider({ children, ...props }) {
-  const stateContext = React.useContext(ReportStateContext);
-  const actionsContext = React.useContext(ReportActionsContext);
-  const [ state, dispatch ] = React.useReducer(actionsContext, stateContext);
-  const boundActions = bindDispatchToActions(dispatch);
-  return (
-    // @ts-ignore
+export default function ReportStateProvider({ children }) {
+  const stateContext = useContext(ReportStateContext);
+  const actionsContext = useContext(ReportActionsContext);
+  const [ state, dispatch ] = useReducer(actionsContext, stateContext);
+  const bindDispatchCb =
+    useCallback(() => bindDispatchToActions(dispatch), [ dispatch ]);
+  const boundActions = bindDispatchCb(dispatch);
+  return useMemo(() => (
     <ReportActionsContext.Provider value={boundActions}>
       <ReportStateContext.Provider value={state}>
         {children}
       </ReportStateContext.Provider>
     </ReportActionsContext.Provider>
-  );
+  ), [ state, boundActions, children ]);
 }

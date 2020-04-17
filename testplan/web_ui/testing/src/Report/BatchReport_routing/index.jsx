@@ -1,10 +1,8 @@
 import React from 'react';
 import _isEqual from 'lodash/isEqual';
 import { css } from 'aphrodite';
-import Axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
-
 import CenterPane from './components/CenterPane';
 import Toolbar from './components/Toolbar';
 import { batchReportStyles } from './style';
@@ -16,10 +14,7 @@ import NavPanes from './components/NavPanes';
 import { queryStringToMap } from '../../Common/utils';
 
 export function BatchReportStartup({
-  browserProps,
-  children = null,
-  skipFetch = false,
-  axiosInstance = null,
+  browserProps, children, skipFetch = false
 }) {
   const
     currLocation = useLocation(),
@@ -62,7 +57,6 @@ export function BatchReportStartup({
     browserProps.match.params.uid,
     isDevelopment || isTesting,
     skipFetch,
-    axiosInstance,
   );
 
   return children;
@@ -73,27 +67,18 @@ BatchReportStartup.propTypes = {
     location: PropTypes.object,
     history: PropTypes.object,
   }).isRequired,
-  children: PropTypes.element,
-  axiosInstance: PropTypes.oneOf([
-    PropTypes.instanceOf(Axios),
-    null,
-  ]),
+  children: PropTypes.element.isRequired,
 };
 
 export default function BatchReport(props) {
-  const browserProps = {
-    match: props.match,
-    location: props.location,
-    history: props.history,
-  };
-  return (
+  const { match, location, history, skipFetch,  } = props;
+  const browserProps = { match, location, history };
+  const className = css(batchReportStyles.batchReport);
+  return React.useMemo(() => (
     <ReportStateProvider>
       <UIRouter>
-        <BatchReportStartup browserProps={browserProps}
-                            skipFetch={props.skipFetch}
-                            axiosInstance={props.axiosInstance}
-        >
-          <div className={css(batchReportStyles.batchReport)}>
+        <BatchReportStartup browserProps={browserProps} skipFetch={skipFetch}>
+          <div className={className}>
             <Toolbar/>
             <NavPanes/>
             <CenterPane/>
@@ -101,17 +86,5 @@ export default function BatchReport(props) {
         </BatchReportStartup>
       </UIRouter>
     </ReportStateProvider>
-  );
+  ), [ browserProps, skipFetch, className ]);
 }
-BatchReport.propTypes = {
-  // in testing we pass a shared ReportStateProvider to the component
-  contextProvider: PropTypes.oneOf([
-    'TestStateProvider',
-  ]),
-  props: PropTypes.shape({
-    // may skip fetch during testing
-    skipFetch: PropTypes.bool,
-    // may be a moxios instance during testing
-    axiosInstance: PropTypes.instanceOf(Axios),
-  }),
-};

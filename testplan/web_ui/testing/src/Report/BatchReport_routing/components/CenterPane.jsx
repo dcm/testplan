@@ -13,18 +13,33 @@ import useReportState from '../hooks/useReportState';
 export default function CenterPane() {
   const [
     [
-      placeholderMessage = '', isFetchingMessage = '', isLoadingMessage = '',
+      placeholderMessage = '',
+      isFetchingMessage = '',
+      isLoadingMessage = '',
       errorMessagePrelude = '',
-      isFetching, isLoading, fetchError, selectedTestCase, jsonReport,
+      isFetching,
+      isLoading,
+      fetchError,
+      selectedTestCase,
+      jsonReport,
       filter,
     ]
   ] = useReportState([
-    'centerPanelPlaceholderMessage', 'isFetchingMessage', 'isLoadingMessage',
+    'centerPanelPlaceholderMessage',
+    'isFetchingMessage',
+    'isLoadingMessage',
     'fetchErrorMessagePrelude',
-    'isFetching', 'isLoading', 'fetchError', 'selectedTestCase', 'jsonReport',
+    'isFetching',
+    'isLoading',
+    'fetchError',
+    'selectedTestCase',
+    'jsonReport',
     'filter',
   ].map(e => `app.reports.batch.${e}`), false);
-  const message =
+  const
+    messageLeft = `${COLUMN_WIDTH || 0}`,
+    assertPaneLeft = `${(COLUMN_WIDTH || 0) + 1.5}`,
+    message =
     fetchError instanceof Error
       ? `${errorMessagePrelude} ${fetchError.message}`
       : isFetching
@@ -33,14 +48,15 @@ export default function CenterPane() {
           ? isLoadingMessage
           : null;
   if(message !== null) {
-    return <Message left={COLUMN_WIDTH} message={message} />;
-  } else if(selectedTestCase != null) {
+    return <Message left={messageLeft} message={message} />;
+  } else if(selectedTestCase !== null) {
     const
       { uid: testcaseUid,
         logs,
         entries: assertions,
         description,
       } = selectedTestCase,
+      descriptionEntries = [ description ],
       { uid: reportUid } = jsonReport,
       hasValidAssertions = Array.isArray(assertions) && assertions.length > 0,
       hasValidLogs = Array.isArray(logs) && logs.length > 0;
@@ -48,8 +64,8 @@ export default function CenterPane() {
       return (
         <AssertionPane assertions={assertions}
                        logs={logs}
-                       descriptionEntries={[description]}
-                       left={COLUMN_WIDTH + 1.5}
+                       descriptionEntries={descriptionEntries}
+                       left={assertPaneLeft}
                        testcaseUid={testcaseUid}
                        filter={filter}
                        reportUid={reportUid}
@@ -57,7 +73,9 @@ export default function CenterPane() {
       );
     }
   }
-  return <Message left={COLUMN_WIDTH} message={placeholderMessage} />;
+  return (
+    <Message left={messageLeft} message={placeholderMessage}/>
+  );
 }
 CenterPane.propTypes = {
   placeholderMessage: PropTypes.string,

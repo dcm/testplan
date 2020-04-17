@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 // @ts-nocheck
 import React from 'react';
-import { act, cleanup, renderHook } from 'react-hooks-testing-library';
+import { act, cleanup, renderHook } from '@testing-library/react-hooks';
 import _at from 'lodash/at';
 import _shuffle from 'lodash/shuffle';
 import uriComponentCodec from '../../utils/uriComponentCodec';
