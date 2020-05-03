@@ -3,9 +3,21 @@ import DropdownItem from 'reactstrap/lib/DropdownItem';
 import Input from 'reactstrap/lib/Input';
 import Label from 'reactstrap/lib/Label';
 import { css } from 'aphrodite';
+import connect from 'react-redux/es/connect/connect';
+import { bindActionCreators } from 'redux/es/redux';
 
-import useReportState from '../hooks/useReportState';
 import navStyles from '../../../Toolbar/navStyles';
+import { actionTypes, actionCreators } from '../state';
+
+const { APP_BATCHREPORT_FILTER } = actionTypes;
+const connector = connect(
+  state => ({
+    filter: state[APP_BATCHREPORT_FILTER],
+  }),
+  dispatch => bindActionCreators({
+    setFilter: actionCreators.setAppBatchReportFilter,
+  }, dispatch),
+);
 
 /**
  * Buttons used to set the filters. The placeholders "<none>" are meant to alert
@@ -15,22 +27,20 @@ import navStyles from '../../../Toolbar/navStyles';
  * @param {string} [obj.label="<none>"]
  * @returns {React.FunctionComponentElement}
  */
-export default ({ value = '<none>', label = '<none>' }) => {
-  const [ filter, setFilter ] = useReportState(
-    'app.reports.batch.filter',
-    'setAppBatchReportFilter',
-  );
-  return (
-    <DropdownItem toggle={false} className={css(navStyles.dropdownItem)}>
-      <Label check className={css(navStyles.filterLabel)}>
-        <Input type='radio'
-               name='filter'
-               value={value}
-               checked={filter === value}
-               onChange={evt => setFilter(evt.currentTarget.value)}
-        />
-        {' ' + label}
-      </Label>
-    </DropdownItem>
-  );
-};
+export default connector(
+  ({ filter, setFilter, value = '<none>', label = '<none>' }) => {
+    return (
+      <DropdownItem toggle={false} className={css(navStyles.dropdownItem)}>
+        <Label check className={css(navStyles.filterLabel)}>
+          <Input type='radio'
+                 name='filter'
+                 value={value}
+                 checked={filter === value}
+                 onChange={evt => setFilter(evt.currentTarget.value)}
+          />
+          {' ' + label}
+        </Label>
+      </DropdownItem>
+    );
+  }
+);

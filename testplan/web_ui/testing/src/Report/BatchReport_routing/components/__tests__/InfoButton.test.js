@@ -32,7 +32,7 @@ describe('InfoButton', () => {
         useReportState.mockReturnValue([ isShowInfoModal, setShowInfoModal ])
           .mockName('useReportState');
         jest.isolateModules(() => {
-          const { default: InfoButton } = require('../InfoButton');
+          const { InfoButton } = require('../');
           act(() => { render(<InfoButton/>, global.container); });
         });
       });

@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useEffect } from 'react';
-import Axios from 'axios';
-import _cloneDeep from 'lodash/cloneDeep';
+import Axios from 'axios/lib/core/Axios';
+import clone from 'ramda/es/clone';
 import { PropagateIndices } from '../../reportUtils';
 import useReportState from './useReportState';
 
@@ -37,7 +37,7 @@ export default function useFetchReport(
           cancelToken: fetchCanceller.token,
         });
         setFetchingCb(false);
-        const report = _cloneDeep(document.data);
+        const report = clone(document.data);
         const propagatedReport = PropagateIndices(report);
         setJsonReportCb(propagatedReport);
       } catch(err) {

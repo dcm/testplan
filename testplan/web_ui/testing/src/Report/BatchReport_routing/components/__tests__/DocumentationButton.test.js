@@ -3,7 +3,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { act } from 'react-dom/test-utils';
-import { StyleSheetTestUtils } from 'aphrodite';
+import { StyleSheetTestUtils } from 'aphrodite/es';
 import _shuffle from 'lodash/shuffle';
 
 import useReportState from '../../hooks/useReportState';
@@ -32,9 +32,7 @@ describe('DocumentationButton', () => {
         useReportState.mockReturnValue([ docURL ])
           .mockName('useReportState');
         jest.isolateModules(() => {
-          const {
-            default: DocumentationButton
-          } = require('../DocumentationButton');
+          const { DocumentationButton } = require('../');
           act(() => { render(<DocumentationButton/>, global.container); });
         });
       });

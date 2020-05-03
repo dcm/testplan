@@ -107,7 +107,30 @@ export const singletonToValue = arr =>
   Array.isArray(arr) && arr.length === 1 ? arr[0] : arr;
 
 /**
- * Convert a URL query string to a Map with JSON-parsed values
+ * Convert a URL query string to a generator of [ key, JSON.parse'd value ].
+ * @example
+ * queryStringToMap('?a=1&b=true&c=%7B"x"%3A+null%7D') === new Map([
+ *   ['a', 1],
+ *   ['b', true],
+ *   ['c', { x: null }],
+ * ])
+ * @param {string} queryString - a URL query string
+ * @yields {[string, any]}
+ */
+export function *queryStringToEntriesGenerator(queryString) {
+  for(const [ qKey, qVal ] of new URLSearchParams(queryString).entries()) {
+    let entry;
+    try {
+      entry = [ qKey, JSON.parse(qVal) ];
+    } catch(err) {
+      entry = [ qKey, qVal ];
+    }
+    yield entry;
+  }
+}
+
+/**
+ * Convert a URL query string to a Map with JSON.parse'd values
  * @example
  * queryStringToMap('?a=1&b=true&c=%7B"x"%3A+null%7D') === new Map([
  *   ['a', 1],
@@ -117,18 +140,9 @@ export const singletonToValue = arr =>
  * @param {string} queryString - a URL query string
  * @returns {Map<string, any>}
  */
-export function queryStringToMap(queryString) {
-  const parsedEntries = new Map();
+export const queryStringToMap = (queryString) =>
   // @ts-ignore
-  for(const [ qKey, qVal ] of new URLSearchParams(queryString).entries()) {
-    try {
-      parsedEntries.set(qKey, JSON.parse(qVal));
-    } catch(err) {
-      parsedEntries.set(qKey, qVal);
-    }
-  }
-  return parsedEntries;
-}
+  new Map(queryStringToEntriesGenerator(queryString));
 
 /** @typedef {any |string |number |boolean |null |symbol |BigInt} ActuallyAny */
 /**
@@ -153,5 +167,71 @@ export function mapToQueryString(mapObj) {
   return new URLSearchParams(stringifiedEntries).toString();
 }
 
+export const objToQueryString = plainObj =>
+  mapToQueryString(new Map(Object.entries(plainObj)));
+
+
 /** @see react-dom/cjs/react-dom.development.js:12230 */
 export const MAX_SIGNED_31_BIT_INT = (2 ** 30) - 1;
+
+/**
+ * Reverses a Map.
+ * @template T, U
+ * @param {Map<T, U>} aMap - The map to reverse
+ * @returns {Map<U, T>}
+ */
+export const reverseMap = aMap => new Map(
+  Array.from(aMap).map(([newVal, newKey]) => [ newKey, newVal ])
+);
+
+/**
+ * Takes a Map possibly having array-values keys or values and creates a new Map
+ * with 1-valued keys and array-grouped values. Order Top-Down Left-Right is
+ * maintianed.
+ * @example
+ > flattenMap(new Map([
+     [ ['a','b','c'], [{x:0}, []] ],
+     [ ['a','d','c'], [()=>1,22]  ],
+     [ [9,  'q','b'], true        ],
+   ])
+
+ Map {
+    'a' => [{x:0}, [], ()=>1, 22]
+    'b' => [{x:0}, [], true]
+    'c' => [{x:0}, [], ()=>1, 22]
+    'd' => [()=>1, 22]
+    9 => [true]
+    'q' => [true]
+  }
+
+ * @template T
+ * @template U
+ * @template V
+ * @param {Map<(T | T[]), (U | U[])>} aMap
+ * @param {null | function(T): V} [keyConverter=null] -
+ *    function to apply to the individual keys before setting them in the map
+ * @returns {Map<V, U>}
+ */
+export function flattenMap(aMap, keyConverter = null) {
+  const flatMap = new Map();
+  const resolvedKeyConverter = typeof keyConverter === 'function'
+    ? keyConverter
+    : k => k;
+  const _setOneKey = (_oneKey, _valArray) => {
+    const _oneResolvedKey = resolvedKeyConverter(_oneKey);
+    if(flatMap.has(_oneResolvedKey)) {
+      flatMap.get(_oneResolvedKey).push(..._valArray);
+    } else {
+      flatMap.set(_oneResolvedKey, _valArray);
+    }
+  };
+  for(const [ key, val ] of aMap) {
+    const valArray = Array.isArray(val) ? val : [ val ];
+    if(Array.isArray(key)) {
+      for(const subKey of key) _setOneKey(subKey, valArray);
+    } else {
+      _setOneKey(key, valArray);
+    }
+  }
+  return flatMap;
+}

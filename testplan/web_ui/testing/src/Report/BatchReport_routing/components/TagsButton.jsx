@@ -16,7 +16,7 @@ library.add(faTags);
  */
 export default function TagsButton() {
   const [ isShowTags, setShowTags ] = useReportState(
-    'app.reports.batch.isShowTags',
+    'app.batchReport.isShowTags',
     'setAppBatchReportIsShowTags',
   );
   const onClick = evt => {

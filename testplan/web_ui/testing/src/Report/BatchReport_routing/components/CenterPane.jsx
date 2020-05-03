@@ -1,52 +1,64 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import connect from 'react-redux/es/connect/connect';
 
 import AssertionPane from '../../../AssertionPane/AssertionPane';
 import { COLUMN_WIDTH } from '../../../Common/defaults';
 import Message from '../../../Common/Message';
-import useReportState from '../hooks/useReportState';
+import { actionTypes } from '../state';
+
+const {
+  APP_BATCHREPORT_CENTERPANEL_PLACEHOLDER_MSG,
+  APP_BATCHREPORT_FETCHING_MSG,
+  APP_BATCHREPORT_LOADING_MSG,
+  APP_BATCHREPORT_FETCH_ERROR_MSG_PRELUDE,
+  APP_BATCHREPORT_FETCHING,
+  APP_BATCHREPORT_LOADING,
+  APP_BATCHREPORT_FETCH_ERROR,
+  APP_BATCHREPORT_SELECTED_TEST_CASE,
+  APP_BATCHREPORT_JSON_REPORT,
+  APP_BATCHREPORT_FILTER,
+} = actionTypes;
+const connector = connect(
+  state => ({
+    placeholderMessage: state[APP_BATCHREPORT_CENTERPANEL_PLACEHOLDER_MSG],
+    isFetchingMessage: state[APP_BATCHREPORT_FETCHING_MSG],
+    isLoadingMessage: state[APP_BATCHREPORT_LOADING_MSG],
+    errorMessagePrelude: state[APP_BATCHREPORT_FETCH_ERROR_MSG_PRELUDE],
+    isFetching: state[APP_BATCHREPORT_FETCHING],
+    isLoading: state[APP_BATCHREPORT_LOADING],
+    fetchError: state[APP_BATCHREPORT_FETCH_ERROR],
+    selectedTestCase: state[APP_BATCHREPORT_SELECTED_TEST_CASE],
+    jsonReport: state[APP_BATCHREPORT_JSON_REPORT],
+    filter: state[APP_BATCHREPORT_FILTER],
+  }),
+);
 
 /**
  * The center pane
  * @returns {React.FunctionComponentElement}
  */
-export default function CenterPane() {
-  const [
-    [
-      placeholderMessage = '',
-      isFetchingMessage = '',
-      isLoadingMessage = '',
-      errorMessagePrelude = '',
-      isFetching,
-      isLoading,
-      fetchError,
-      selectedTestCase,
-      jsonReport,
-      filter,
-    ]
-  ] = useReportState([
-    'centerPanelPlaceholderMessage',
-    'isFetchingMessage',
-    'isLoadingMessage',
-    'fetchErrorMessagePrelude',
-    'isFetching',
-    'isLoading',
-    'fetchError',
-    'selectedTestCase',
-    'jsonReport',
-    'filter',
-  ].map(e => `app.reports.batch.${e}`), false);
-  const
-    messageLeft = `${COLUMN_WIDTH || 0}`,
+const CenterPane = connector(({
+  placeholderMessage = '',
+  isFetchingMessage = '',
+  isLoadingMessage = '',
+  errorMessagePrelude = '',
+  isFetching,
+  isLoading,
+  fetchError,
+  selectedTestCase,
+  jsonReport,
+  filter,
+}) => {
+  const messageLeft = `${COLUMN_WIDTH || 0}`,
     assertPaneLeft = `${(COLUMN_WIDTH || 0) + 1.5}`,
-    message =
-    fetchError instanceof Error
-      ? `${errorMessagePrelude} ${fetchError.message}`
-      : isFetching
-        ? isFetchingMessage
-        : isLoading
-          ? isLoadingMessage
-          : null;
+    message = fetchError instanceof Error ?
+      `${errorMessagePrelude} ${fetchError.message}` :
+      isFetching ?
+        isFetchingMessage :
+        isLoading ?
+          isLoadingMessage :
+          null;
   if(message !== null) {
     return <Message left={messageLeft} message={message} />;
   } else if(selectedTestCase !== null) {
@@ -76,7 +88,7 @@ export default function CenterPane() {
   return (
     <Message left={messageLeft} message={placeholderMessage}/>
   );
-}
+});
 CenterPane.propTypes = {
   placeholderMessage: PropTypes.string,
   isFetchingMessage: PropTypes.string,
@@ -89,3 +101,5 @@ CenterPane.propTypes = {
   testcaseUid: PropTypes.string,
   description: PropTypes.string,
 };
+
+export default CenterPane;

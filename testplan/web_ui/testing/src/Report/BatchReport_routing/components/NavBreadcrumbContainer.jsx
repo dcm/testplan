@@ -1,5 +1,5 @@
 import React from 'react';
-import { css } from 'aphrodite';
+import { css } from 'aphrodite/es';
 import { navBreadcrumbStyles } from '../style';
 
 export default ({ children = null }) => (

@@ -3,7 +3,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { StyleSheetTestUtils } from 'aphrodite';
-import InfoModal from '../InfoModal';
+import { InfoModal } from '../';
 import useReportState from '../../hooks/useReportState';
 
 jest.mock('../../hooks/useReportState');

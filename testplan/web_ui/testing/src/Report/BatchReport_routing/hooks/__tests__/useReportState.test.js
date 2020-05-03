@@ -6,10 +6,9 @@ import _at from 'lodash/at';
 import _shuffle from 'lodash/shuffle';
 import uriComponentCodec from '../../utils/uriComponentCodec';
 import useReportState from '../useReportState';
-import ReportStateProvider from '../../state/ReportStateProvider';
-import * as actionTypes from '../../state/actionTypes';
-import actionCreators from '../../state/actionCreators';
-import defaultState from '../../state/defaultState';
+import {
+  defaultState, actionCreators, actionTypes, ReportStateProvider
+} from '../../state';
 import {
   randomSamples, getPaths,
 } from '../../../../__tests__/fixtures/testUtils';

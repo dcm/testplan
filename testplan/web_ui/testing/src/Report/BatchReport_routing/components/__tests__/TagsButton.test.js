@@ -39,10 +39,10 @@ describe('TagsButton', () => {
          * tests using it are not independent, i.e. the order in which the tests
          * run determine what the snapshot will look like. This 'isolateModules'
          * effectively resets that internal count on each run.
-         * @type {import("../TagsButton").default}
+         * @type {import("../").TagsButton}
          */
         jest.isolateModules(() => {
-          const { default: TagsButton } = require('../TagsButton');
+          const { TagsButton } = require('../');
           act(() => { render(<TagsButton/>, global.container); });
         });
       });

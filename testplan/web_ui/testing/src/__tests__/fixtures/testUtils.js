@@ -8,6 +8,7 @@
 import _ from 'lodash';
 import uriComponentCodec
   from '../../Report/BatchReport_routing/utils/uriComponentCodec';
+export { reverseMap } from '../../Common/utils';
 
 // `react-scripts test` sets NODE_ENV to "test". This module shouldn't be
 // used at any other time. Thus we'll throw an error to ensure this.
@@ -353,19 +354,6 @@ const getPathStrings = _.memoize(obj => {
 const getPathArrays = _.memoize(
   obj => getPathStrings(obj).map(v => _.toPath(v))
 );
-
-/**
- * Reverses a `Map`.
- * @param {Map} aMap
- * @returns {Map}
- */
-export function reverseMap(aMap) {
-  const revMap = new Map();
-  for(const [prop, val] of aMap) {
-    revMap.set(val, prop);
-  }
-  return revMap;
-}
 
 /**
  * Get the URL paths that could be traversed in a given report

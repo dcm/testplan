@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 import React from 'react';
-import EmptyListGroupItem from '../EmptyListGroupItem';
+import { EmptyListGroupItem } from '../';
 import { render } from 'enzyme';
 import { StyleSheetTestUtils } from 'aphrodite';
 

@@ -4,7 +4,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { StyleSheetTestUtils } from 'aphrodite';
 import _shuffle from 'lodash/shuffle';
-import DisplayEmptyCheckBox from '../DisplayEmptyCheckBox';
+import { DisplayEmptyCheckBox } from '../';
 import useReportState from '../../hooks/useReportState';
 
 jest.mock('../../hooks/useReportState');

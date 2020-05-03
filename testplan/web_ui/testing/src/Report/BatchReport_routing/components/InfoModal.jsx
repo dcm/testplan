@@ -14,7 +14,7 @@ import InfoTable from './InfoTable';
  */
 export default function InfoModal() {
   const [ isShowInfoModal, setShowInfoModal ] = useReportState(
-    'app.reports.batch.isShowInfoModal',
+    'app.batchReport.isShowInfoModal',
     'setAppBatchReportShowInfoModal',
   );
   const toggle = () => setShowInfoModal(!isShowInfoModal);

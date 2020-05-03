@@ -4,21 +4,29 @@ import { css } from 'aphrodite';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faInfo } from '@fortawesome/free-solid-svg-icons';
+import connect from 'react-redux/es/connect/connect';
+import { bindActionCreators } from 'redux/es/redux';
 
-import useReportState from '../hooks/useReportState';
 import navStyles from '../../../Toolbar/navStyles';
+import { actionTypes, actionCreators } from '../state';
 
 library.add(faInfo);
+
+const { APP_BATCHREPORT_SHOW_INFO_MODAL } = actionTypes;
+const connector = connect(
+  state => ({
+    isShowInfoModal: state[APP_BATCHREPORT_SHOW_INFO_MODAL],
+  }),
+  dispatch => bindActionCreators({
+    setShowInfoModal: actionCreators.setAppBatchReportShowInfoModal,
+  }, dispatch),
+);
 
 /**
  * Return the info button which toggles the info modal.
  * @returns {React.FunctionComponentElement}
  */
-export default function InfoButton() {
-  const [ isShowInfoModal, setShowInfoModal ] = useReportState(
-    'app.reports.batch.isShowInfoModal',
-    'setAppBatchReportShowInfoModal',
-  );
+export default connector(({ isShowInfoModal, setShowInfoModal }) => {
   const onClick = evt => {
     evt.stopPropagation();
     setShowInfoModal(!isShowInfoModal);
@@ -36,4 +44,4 @@ export default function InfoButton() {
       </div>
     </NavItem>
   );
-}
+});

@@ -32,7 +32,7 @@ describe('HelpButton', () => {
         useReportState.mockReturnValue([ isShowHelpModal, setShowHelpModal ])
           .mockName('useReportState');
         jest.isolateModules(() => {
-          const { default: HelpButton } = require('../HelpButton');
+          const { HelpButton } = require('../');
           act(() => {
             render(<HelpButton/>, global.container);
           });

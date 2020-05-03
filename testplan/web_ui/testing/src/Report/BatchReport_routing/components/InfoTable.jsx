@@ -10,7 +10,7 @@ import navStyles from '../../../Toolbar/navStyles';
  * @returns {React.FunctionComponentElement}
  */
 export default function InfoTable() {
-  const [ jsonReport ] = useReportState('app.reports.batch.jsonReport', false);
+  const [ jsonReport ] = useReportState('app.batchReport.jsonReport', false);
   return React.useMemo(() => {
     if(!(jsonReport && jsonReport.information)) {
       return (

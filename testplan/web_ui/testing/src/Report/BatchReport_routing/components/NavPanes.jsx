@@ -1,17 +1,30 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
+import connect from 'react-redux/es/connect/connect';
 
-import useReportState from '../hooks/useReportState';
 import EmptyListGroupItem from './EmptyListGroupItem';
 import NavBreadcrumbContainer from './NavBreadcrumbContainer';
 import NavBreadcrumbWithNextRoute from './NavBreadcrumbWithNextRoute';
 import NavSidebarWithNextRoute from './NavSidebarWithNextRoute';
 import AutoSelectRedirect from './AutoSelectRedirect';
 
-export default function NavPanes() {
-  const [ [ jsonReport, fetchError, isFetching ] ] = useReportState([
-    'jsonReport', 'fetchError', 'isFetching',
-  ].map(e => `app.reports.batch.${e}`), false);
+
+import { actionTypes } from '../state';
+
+const {
+  APP_BATCHREPORT_JSON_REPORT,
+  APP_BATCHREPORT_FETCH_ERROR,
+  APP_BATCHREPORT_FETCHING,
+} = actionTypes;
+const connector = connect(
+  state => ({
+    jsonReport: state[APP_BATCHREPORT_JSON_REPORT],
+    fetchError: state[APP_BATCHREPORT_FETCH_ERROR],
+    isFetching: state[APP_BATCHREPORT_FETCHING],
+  }),
+);
+
+export default connector(({ jsonReport, fetchError, isFetching }) => {
   return (isFetching || fetchError || !jsonReport)
     ? <EmptyListGroupItem/>
     : (
@@ -42,4 +55,4 @@ export default function NavPanes() {
         }/>
       </>
     );
-}
+});

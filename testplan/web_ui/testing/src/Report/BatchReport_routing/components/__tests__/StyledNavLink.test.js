@@ -6,18 +6,21 @@ import { render, fireEvent } from '@testing-library/react';
 import { StyleSheetTestUtils, css } from 'aphrodite';
 import { Router } from 'react-router-dom';
 import _shuffle from 'lodash/shuffle';
-import _isEqual from 'lodash/isEqual';
-import _zip from 'lodash/zip';
-import _get from 'lodash/get';
-import StyledNavLink from '../StyledNavLink';
+import zip from 'ramda/es/zip';
+import equals from 'ramda/es/equals';
+import R_path from 'ramda/es/path';
+import { StyledNavLink } from '../';
 import useReportState from '../../hooks/useReportState';
 import {
-  findAllDeep, filterObjectDeep, deriveURLPathsFromReport
+  deriveURLPathsFromReport
 } from '../../../../__tests__/fixtures/testUtils';
+import { filterObjectDeep } from '../../../../__tests__/fixtures/testUtils';
+import { findAllDeep } from '../../../../__tests__/fixtures/testUtils';
 import { navUtilsStyles } from '../../style';
-import { APP_BATCHREPORT_SELECTED_TEST_CASE } from '../../state/actionTypes';
+import { actionTypes } from '../../state';
 import { createMemoryHistory, createLocation, createPath } from 'history';
 
+const { APP_BATCHREPORT_SELECTED_TEST_CASE } = actionTypes;
 jest.mock('../../hooks/useReportState');
 
 function uidFromPathname2ObjPathMapCurrier(obj, pathname2ObjPathMap) {
@@ -26,7 +29,7 @@ function uidFromPathname2ObjPathMapCurrier(obj, pathname2ObjPathMap) {
     const pathnameObjPath = pathname2ObjPathMap.get(pathname);
     if(!pathnameObjPath) throw maybeErr;
     const uidObjPath = pathnameObjPath.slice(0, -1).concat(['uid']);
-    const uid = _get(obj, uidObjPath);
+    const uid = R_path(uidObjPath, obj);
     if(!uid) throw maybeErr;
     return uid;
   };
@@ -58,7 +61,7 @@ const IS_ACTIVE_CLASSES = css(navUtilsStyles.navButtonInteract),
       pathname2ObjectPathMap_TPR1
     )
   ),
-  TESTPLAN_REPORT_1_SLIM_URLS_UIDS = _zip(
+  TESTPLAN_REPORT_1_SLIM_URLS_UIDS = zip(
     TESTPLAN_REPORT_1_SLIM_URLS,
     TESTPLAN_REPORT_1_SLIM_UIDS,
   ),
@@ -75,7 +78,7 @@ const IS_ACTIVE_CLASSES = css(navUtilsStyles.navButtonInteract),
       pathname2ObjectPathMap_TPR2
     )
   ),
-  TESTPLAN_REPORT_2_SLIM_URLS_UIDS = _zip(
+  TESTPLAN_REPORT_2_SLIM_URLS_UIDS = zip(
     TESTPLAN_REPORT_2_SLIM_URLS,
     TESTPLAN_REPORT_2_SLIM_UIDS,
   ),
@@ -94,13 +97,13 @@ const randomQSs = startPathnames.slice(1).map(
   (_, i) => `?${String.fromCharCode(97 + (i % 26))}=${i}`
 );
 // join each query string with each startPathnames, skipping the first
-const startURLs = _zip(startPathnames, randomQSs.concat([''])).map(
+const startURLs = zip(startPathnames, randomQSs.concat([''])).map(
   ([pth, qs]) => `${pth}${qs}`
 );
 const urlIdx = startURLs.map((_, i) => i);
 const startUIDs = Array.from(TESTPLAN_REPORT_URL_UID_MAP.values());
 const destUIDs = startUIDs.slice(1).concat(['']);
-const URL_QUINTUPLETS = _zip(
+const URL_QUINTUPLETS = zip(
   startURLs,  // current pathname+querystring
   destPathnames,  // linked-to pathname
   startUIDs,
@@ -126,7 +129,7 @@ const SAMPLE_TESTCASES = _shuffle([ null ].concat(
   )
 ).filter(  // remove duplicates
   (el, i, arr) =>
-    !arr.slice(i + 1).find(_el => _isEqual(_el, el))
+    !arr.slice(i + 1).find(_el => equals(_el, el))
 ));
 
 global.env = {

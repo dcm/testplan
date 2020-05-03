@@ -1,4 +1,4 @@
-import { StyleSheet } from 'aphrodite';
+import { StyleSheet } from 'aphrodite/es';
 
 export { default as CommonStyles } from '../../Common/Styles';
 export { styles as navBreadcrumbStyles } from '../../Nav/NavBreadcrumbs';

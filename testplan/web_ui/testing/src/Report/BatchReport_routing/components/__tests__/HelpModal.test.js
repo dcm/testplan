@@ -3,7 +3,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { StyleSheetTestUtils } from 'aphrodite';
-import HelpModal from '../HelpModal';
+import { HelpModal } from '../';
 import useReportState from '../../hooks/useReportState';
 
 jest.mock('../../hooks/useReportState');

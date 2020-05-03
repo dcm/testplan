@@ -1,17 +1,24 @@
 import React from 'react';
-import _isEqual from 'lodash/isEqual';
-import { css } from 'aphrodite';
+import equals from 'ramda/es/equals';
+import { css } from 'aphrodite/es';
 import { useLocation } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import CenterPane from './components/CenterPane';
-import Toolbar from './components/Toolbar';
+import PropTypes from 'prop-types/index';
+import { CenterPane } from './components';
+import { Toolbar } from './components';
+import { UIRouter } from './components';
+import { NavPanes } from './components';
 import { batchReportStyles } from './style';
-import ReportStateProvider from './state/ReportStateProvider';
+import { ReportStateProvider } from './state';
 import useReportState from './hooks/useReportState';
 import useFetchReport from './hooks/useFetchReport';
-import UIRouter from './components/UIRouter';
-import NavPanes from './components/NavPanes';
 import { queryStringToMap } from '../../Common/utils';
+import AppStateProvider from './state/react-redux/UIStateProvider';
+
+// import {
+//   OtherConnectedRouter, OtherProvider, otherConnect,
+// } from './state/react-redux/store';
+import { push } from 'connected-react-router/esm/actions';
+import connect from 'react-redux/es/connect/connect';
 
 export function BatchReportStartup({
   browserProps, children, skipFetch = false
@@ -41,14 +48,14 @@ export function BatchReportStartup({
 
   // sync query params to state when they change
   const prevQueryMapRef = React.useRef(uriHashQueryMap);
-  if(!_isEqual(uriQueryMap, prevQueryMapRef.current)) {
+  if(!equals(uriQueryMap, prevQueryMapRef.current)) {
     mapQueryToState(uriQueryMap);
     prevQueryMapRef.current = uriQueryMap;
   }
 
   // sync hash query params to state when they change
   const prevHashQueryMapRef = React.useRef(uriHashQueryMap);
-  if(!_isEqual(uriHashQueryMap, prevHashQueryMapRef.current)) {
+  if(!equals(uriHashQueryMap, prevHashQueryMapRef.current)) {
     mapHashQueryToState(uriHashQueryMap);
     prevHashQueryMapRef.current = uriHashQueryMap;
   }
@@ -70,21 +77,47 @@ BatchReportStartup.propTypes = {
   children: PropTypes.element.isRequired,
 };
 
-export default function BatchReport(props) {
+/*export default*/ function BatchReport(props) {
   const { match, location, history, skipFetch,  } = props;
   const browserProps = { match, location, history };
   const className = css(batchReportStyles.batchReport);
-  return React.useMemo(() => (
-    <ReportStateProvider>
-      <UIRouter>
-        <BatchReportStartup browserProps={browserProps} skipFetch={skipFetch}>
-          <div className={className}>
-            <Toolbar/>
-            <NavPanes/>
-            <CenterPane/>
-          </div>
-        </BatchReportStartup>
-      </UIRouter>
-    </ReportStateProvider>
-  ), [ browserProps, skipFetch, className ]);
+  return /*React.useMemo(() =>*/ (
+    <AppStateProvider>
+     {/*<ReportStateProvider>*/}
+     {/*  <UIRouter>*/}
+        <p>All components disabled - uncomment once things work.</p>
+  {/*<BatchReportStartup browserProps={browserProps} skipFetch={skipFetch}>*/}
+        {/*  <div className={className}>*/}
+        {/*    <Toolbar/>*/}
+        {/*    <NavPanes/>*/}
+        {/*    <CenterPane/>*/}
+        {/*  </div>*/}
+        {/*</BatchReportStartup>*/}
+       {/*</UIRouter>*/}
+     {/*</ReportStateProvider>*/}
+  </AppStateProvider>
+  )/*, [ browserProps, skipFetch, className ])*/;
 }
+
+// let doPush = true;
+// const DummyNavigate = otherConnect(null, { push })(props => {
+//   if(doPush) {
+//     props.push('/a/b/c');
+//     doPush = false;
+//   }
+//   return null;
+// });
+//
+// export default function ParentBatchReport(props) {
+//   return (
+//     <OtherProvider>
+//       <OtherConnectedRouter>
+//         <DummyNavigate/>
+//         <BatchReport {...props} />
+//       </OtherConnectedRouter>
+//     </OtherProvider>
+//   );
+// }
+export default () => (
+  <p>ALLALL components disabled - uncomment once things work.</p>
+);

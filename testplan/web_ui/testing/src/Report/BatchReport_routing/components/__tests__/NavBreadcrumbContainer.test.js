@@ -3,7 +3,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { StyleSheetTestUtils } from 'aphrodite';
-import NavBreadcrumbContainer from '../NavBreadcrumbContainer';
+import { NavBreadcrumbContainer } from '../';
 
 describe('NavBreadcrumbContainer', () => {
 

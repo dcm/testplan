@@ -5,7 +5,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { StyleSheetTestUtils } from 'aphrodite';
 import _shuffle from 'lodash/shuffle';
-import TopNavbar from '../TopNavbar';
+import { TopNavbar } from '../';
 import useReportState from '../../hooks/useReportState';
 
 const fakeReportAssertions =

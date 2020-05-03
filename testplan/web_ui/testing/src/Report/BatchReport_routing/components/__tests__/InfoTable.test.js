@@ -3,7 +3,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { StyleSheetTestUtils } from 'aphrodite';
-import InfoTable from '../InfoTable';
+import { InfoTable } from '../';
 import useReportState from '../../hooks/useReportState';
 import { filterObjectDeep } from '../../../../__tests__/fixtures/testUtils';
 

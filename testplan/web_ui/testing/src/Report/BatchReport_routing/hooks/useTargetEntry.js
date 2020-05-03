@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import uriComponentCodec from '../utils/uriComponentCodec';
 import useReportState from './useReportState';
+import { actionTypes } from '../state';
 
 export default function useTargetEntry(entries) {
   // Assume:
@@ -12,7 +13,7 @@ export default function useTargetEntry(entries) {
   // *    id = "12345"
   const { id: encodedID } = useParams();
   const [ aliases, setUriHashPathComponentAlias ] = useReportState(
-    'uri.hash.aliases', 'setUriHashPathComponentAlias'
+    actionTypes.URI_HASH_ALIASES, 'setUriHashPathComponentAlias'
   );
 
   // gotta run hooks before we do this check since they must run unconditionally

@@ -16,7 +16,7 @@ library.add(faQuestionCircle);
  */
 export default function HelpButton() {
   const [ isShowHelpModal, setShowHelpModal ] = useReportState(
-    'app.reports.batch.isShowHelpModal',
+    'app.batchReport.isShowHelpModal',
     'setAppBatchReportShowHelpModal',
   );
   const onClick = evt => {

@@ -1,18 +1,24 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import { css } from 'aphrodite';
+import connect from 'react-redux/es/connect/connect';
+import { bindActionCreators } from 'redux/es/redux';
 
-import useReportState from '../hooks/useReportState';
 import StyledNavLink from './StyledNavLink';
 import { CommonStyles, navBreadcrumbStyles } from '../style';
 import NavEntry from '../../../Nav/NavEntry';
 import { safeGetNumPassedFailedErrored } from '../utils';
+import { actionCreators } from '../state';
 
-export default ({ entry }) => {
+const connector = connect(
+  null,
+  dispatch => bindActionCreators({
+    setSelectedTestCase: actionCreators.setAppBatchReportSelectedTestCase,
+  }, dispatch),
+);
+
+export default connector(({ entry, setSelectedTestCase }) => {
   const { name, status, category, counter, uid } = entry;
-  const [ , setSelectedTestCase ] = useReportState(
-    false, 'setAppBatchReportSelectedTestCase',
-  );
   // this is the matched Route, not necessarily the current URL
   const { url: matchedPath } = useRouteMatch();
   const [ numPassed, numFailed ] = safeGetNumPassedFailedErrored(counter, 0);
@@ -33,4 +39,4 @@ export default ({ entry }) => {
       />
     </StyledNavLink>
   );
-};
+});

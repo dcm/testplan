@@ -3,7 +3,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { StyleSheetTestUtils } from 'aphrodite';
-import FilterButton from '../FilterButton';
+import { FilterButton } from '../';
 import getToolbarStyle from '../../utils/getToolbarStyle';
 import { STATUS_CATEGORY } from '../../../../Common/defaults';
 

@@ -13,7 +13,7 @@ export default ({ entry, idx, nPass, nFail }) => {
     { name, status, category, tags, uid } = entry,
     [ isShowTags, [ setUriHashPathComponentAlias, setSelectedTestCase ] ] =
       useReportState(
-        'app.reports.batch.isShowTags',
+        'app.batchReport.isShowTags',
         [ 'setUriHashPathComponentAlias', 'setAppBatchReportSelectedTestCase' ],
       ),
     isBottommost = category === BOTTOMMOST_ENTRY_CATEGORY,

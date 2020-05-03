@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 // @ts-nocheck
 import React from 'react';
-import PrintButton from '../PrintButton';
+import { PrintButton } from '../';
 import { render } from 'enzyme';
 import { StyleSheetTestUtils } from 'aphrodite';
 
