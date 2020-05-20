@@ -7,7 +7,7 @@
  */
 import _ from 'lodash';
 import uriComponentCodec
-  from '../../Report/BatchReport_routing/utils/uriComponentCodec';
+  from '../../Report/BatchReport/utils/uriComponentCodec';
 export { reverseMap } from '../../Common/utils';
 
 // `react-scripts test` sets NODE_ENV to "test". This module shouldn't be

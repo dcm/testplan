@@ -1,3 +1,4 @@
+/* global globalThis */
 /**
  * Common utility functions.
  */
@@ -185,53 +186,74 @@ export const reverseMap = aMap => new Map(
 );
 
 /**
- * Takes a Map possibly having array-values keys or values and creates a new Map
- * with 1-valued keys and array-grouped values. Order Top-Down Left-Right is
- * maintianed.
- * @example
- > flattenMap(new Map([
-     [ ['a','b','c'], [{x:0}, []] ],
-     [ ['a','d','c'], [()=>1,22]  ],
-     [ [9,  'q','b'], true        ],
-   ])
-
- Map {
-    'a' => [{x:0}, [], ()=>1, 22]
-    'b' => [{x:0}, [], true]
-    'c' => [{x:0}, [], ()=>1, 22]
-    'd' => [()=>1, 22]
-    9 => [true]
-    'q' => [true]
-  }
-
- * @template T
- * @template U
- * @template V
- * @param {Map<(T | T[]), (U | U[])>} aMap
- * @param {null | function(T): V} [keyConverter=null] -
- *    function to apply to the individual keys before setting them in the map
- * @returns {Map<V, U>}
+ * @typedef {Object.<string, number>} ChromeVersion
+ * @property {number} major
+ * @property {number} minor
+ * @property {number} build
+ * @property {number} patch
  */
-export function flattenMap(aMap, keyConverter = null) {
-  const flatMap = new Map();
-  const resolvedKeyConverter = typeof keyConverter === 'function'
-    ? keyConverter
-    : k => k;
-  const _setOneKey = (_oneKey, _valArray) => {
-    const _oneResolvedKey = resolvedKeyConverter(_oneKey);
-    if(flatMap.has(_oneResolvedKey)) {
-      flatMap.get(_oneResolvedKey).push(..._valArray);
-    } else {
-      flatMap.set(_oneResolvedKey, _valArray);
-    }
-  };
-  for(const [ key, val ] of aMap) {
-    const valArray = Array.isArray(val) ? val : [ val ];
-    if(Array.isArray(key)) {
-      for(const subKey of key) _setOneKey(subKey, valArray);
-    } else {
-      _setOneKey(key, valArray);
-    }
+/**
+ * Returns the Chrome / Chromium version the code is executing in, or
+ * `null` if it's not Chrome or the version can't be determined.
+ * @see https://www.chromium.org/developers/version-numbers
+ * @returns {null | ChromeVersion}
+ */
+export function getChromeVersion() {
+  const keys = [ 'major', 'minor', 'build', 'patch' ];
+  try {
+    return Object.fromEntries(
+      /([Cc]hrom(e|ium)\/(?<version>[0-9.]*?))[\s$]/
+        .exec(globalThis.navigator.appVersion)
+        .groups.version.split('.')
+        .map(vStr => [ keys.shift(), parseInt(vStr, 10) ])
+    );
+  } catch(e) {
+    return null;
   }
-  return flatMap;
+}
+
+/**
+ * Get highest order bit
+ * @example
+ > let n = 0b0011_1110_1000_0000_0000  // 256,000
+ > hibit(n).toString(2)  // formatted for pretty, 131.072
+ 0b0010_0000_0000_0000_0000
+ *
+ * @param {number} n
+ * @returns {number}
+ */
+export const hibit = n => (1 << Math.trunc(Math.log2(n)));
+
+export const SI_FILE_SIZES = [
+  'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'
+];
+export const BINARY_FILE_SIZES = [
+  'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'
+];
+
+/**
+ * Taken from {@link https://stackoverflow.com/a/14919494 this great SO answer}.
+ * @example
+ > toHumanReadableSize(5000, true)
+ '5.0 kB'
+ > toHumanReadableSize(5000, false)
+ '4.9 KiB'
+ > toHumanReadableSize(-10000000000000000000000000000)
+ '-8271.8 YiB'
+ *
+ * @param {number} numBytes
+ * @param {boolean} useSI
+ * @param {number} decimals
+ * @returns {string}
+ */
+export function humanReadableSize(numBytes, useSI = false, decimals = 1) {
+  numBytes = typeof numBytes  !== 'number' ? 0 : numBytes;
+  decimals = typeof decimals  !== 'number' ? 1 : decimals;
+  const div = useSI ? 10 ** 3 : 2 ** 10;
+  if(Math.abs(numBytes) < div) return `${numBytes} B`;
+  const units = useSI ? SI_FILE_SIZES : BINARY_FILE_SIZES;
+  const lastUnitIdx = units.length - 1;
+  let u = -1;
+  do numBytes /= div; while(Math.abs(numBytes) >= div && ++u < lastUnitIdx);
+  return `${numBytes.toFixed(decimals)} ${units[u]}`;
 }
