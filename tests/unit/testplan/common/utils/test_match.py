@@ -5,7 +5,7 @@ import tempfile
 
 import pytest
 
-from testplan.common.utils.match import LogMatcher
+from testplan.common.utils.match import LogMatcher, match_regexps_in_file
 from testplan.common.utils import timing
 
 
@@ -16,6 +16,7 @@ def basic_logfile():
 
     with tempfile.NamedTemporaryFile("w", delete=False) as logfile:
         logfile.writelines(log_lines)
+        logfile.flush()
         filepath = logfile.name
 
     yield filepath
@@ -29,10 +30,50 @@ def large_logfile():
         # Write 1 million lines of 'blah' followed by one line 'Match me!'.
         logfile.writelines("blah\n" for _ in range(int(1e6)))
         logfile.write("Match me!\n")
+        logfile.flush()
         filepath = logfile.name
 
     yield filepath
     os.remove(filepath)
+
+
+class TestMatchRegexpsInFile(object):
+    """
+    Test the match_regexps_in_file function
+    """
+
+    def test_string(self, basic_logfile):
+        log_extracts = [
+            re.compile(r"(?P<first>first)"),
+            re.compile(r"(?P<second>second)"),
+        ]
+
+        status, values = match_regexps_in_file(basic_logfile, log_extracts)
+        assert status is True
+        assert isinstance(values["first"], str)
+        assert isinstance(values["second"], str)
+
+    def test_bytes(self, basic_logfile):
+        log_extracts = [
+            re.compile(br"(?P<first>first)"),
+            re.compile(br"(?P<second>second)"),
+        ]
+
+        status, values = match_regexps_in_file(basic_logfile, log_extracts)
+        assert status is True
+        assert isinstance(values["first"], bytes)
+        assert isinstance(values["second"], bytes)
+
+    def test_mixture(self, basic_logfile):
+        log_extracts = [
+            re.compile(r"(?P<first>first)"),
+            re.compile(br"(?P<second>second)"),
+        ]
+
+        status, values = match_regexps_in_file(basic_logfile, log_extracts)
+        assert status is True
+        assert isinstance(values["first"], bytes)
+        assert isinstance(values["second"], bytes)
 
 
 class TestLogMatcher(object):
@@ -48,6 +89,14 @@ class TestLogMatcher(object):
 
         assert match is not None
         assert match.group(0) == "second"
+
+    def test_binary_match_found(self, basic_logfile):
+        matcher = LogMatcher(log_path=basic_logfile)
+        regex_exp = re.compile(b"second")
+        match = matcher.match(regex=regex_exp)
+
+        assert match is not None
+        assert match.group(0) == b"second"
 
     def test_match_only_searches_after_position(self, basic_logfile):
         """
@@ -72,6 +121,13 @@ class TestLogMatcher(object):
         """Does the LogMatcher raise an exception when no match is found."""
         matcher = LogMatcher(log_path=basic_logfile)
         regex_exp = re.compile(r"bob")
+        with pytest.raises(timing.TimeoutException):
+            matcher.match(regex=regex_exp, timeout=0.5)
+
+    def test_binary_match_not_found(self, basic_logfile):
+        """Does the LogMatcher raise an exception when no match is found."""
+        matcher = LogMatcher(log_path=basic_logfile)
+        regex_exp = re.compile(b"bob")
         with pytest.raises(timing.TimeoutException):
             matcher.match(regex=regex_exp, timeout=0.5)
 

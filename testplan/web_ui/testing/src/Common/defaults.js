@@ -2,8 +2,11 @@
  * Constants used across the entire application.
  */
 export const GREEN = '#228F1D';
+export const DARK_GREEN = '#1A721D';
 export const RED = '#A2000C';
+export const DARK_RED = '#840008';
 export const ORANGE = '#FFA500';
+export const DARK_ORANGE = '#DD8800';
 export const LIGHT_GREY = '#F3F3F3';
 export const MEDIUM_GREY = '#D0D0D0';
 export const DARK_GREY = '#ADADAD';

@@ -2,6 +2,7 @@
 
 import os
 import logging
+from past.builtins import basestring
 
 from schema import Or
 
@@ -51,13 +52,14 @@ class DriverConfig(ResourceConfig):
             "name": str,
             ConfigOption("install_files", default=None): Or(None, list),
             ConfigOption("timeout", default=60): int,
-            ConfigOption("logfile", default=None): Or(None, str),
+            ConfigOption("logname", default=None): Or(None, str),
             ConfigOption("log_regexps", default=None): Or(None, list),
             ConfigOption("stdout_regexps", default=None): Or(None, list),
             ConfigOption("stderr_regexps", default=None): Or(None, list),
             ConfigOption("async_start", default=False): bool,
             ConfigOption("report_errors_from_logs", default=False): bool,
             ConfigOption("error_logs_max_lines", default=10): int,
+            ConfigOption("path_cleanup", default=True): bool,
         }
 
 
@@ -67,20 +69,24 @@ class Driver(Resource):
 
     :param name: Driver name. Also uid.
     :type name: ``str``
-    :param install_files: List of filepaths, those files will be instantiated
-        and placed under path returned by ``_install_target`` method call. Among
-        other cases this is meant to be used with configuration files that may
-        need to be templated and expanded using the runtime context, i.e:
+    :param install_files: list of files to be installed. This list may contain
+        ``str`` or ``tuple``:
+          - ``str``: Name of the file to be copied to path returned by
+            ``_install_target`` method call
+          - ``tuple``: A (source, destination) pair; source file
+            will be copied to destination.
+        Among other cases this is meant to be used with configuration files that
+        may need to be templated and expanded using the runtime context, i.e:
 
         .. code-block:: xml
 
             <address>localhost:{{context['server'].port}}</address>
 
-    :type install_files: ``list`` of ``str``
+    :type install_files: ``List[Union[str, tuple]]``
     :param timeout: Timeout duration for status condition check.
     :type timeout: ``int``
-    :param logfile: Driver logfile path.
-    :type logfile: ``str``
+    :param logname: Driver logfile name.
+    :type logname: ``str``
     :param log_regexps: A list of regular expressions, any named groups matched
         in the logfile will be made available through ``extracts`` attribute.
         These will be start-up conditions.
@@ -97,6 +103,8 @@ class Driver(Resource):
     :param error_logs_max_lines: Number of lines to be reported if using
         `report_errors_from_logs` option.
     :type error_logs_max_lines: ``int``
+    :param path_cleanup: Remove previous runpath created dirs/files.
+    :type path_cleanup: ``bool``
 
 
     Also inherits all
@@ -177,6 +185,14 @@ class Driver(Resource):
         return {attr: getattr(self, attr) for attr in dir(self)}
 
     @property
+    def logname(self):
+        """
+        :return: Configured logname
+        :rtype: ``str``
+        """
+        return self.cfg.logname
+
+    @property
     def logpath(self):
         """Path for log regex matching."""
         return None
@@ -217,7 +233,11 @@ class Driver(Resource):
                 logpath=outfile, log_extracts=regexps, return_unmatched=True
             )
             unmatched.extend(file_unmatched)
-            self.extracts.update(file_extracts)
+            for k, v in file_extracts.items():
+                if isinstance(v, bytes):
+                    self.extracts[k] = v.decode("utf_8")
+                else:
+                    self.extracts[k] = v
             result = result and file_result
 
         if log_unmatched or stdout_unmatched or stderr_unmatched:
@@ -261,8 +281,24 @@ class Driver(Resource):
         raise NotImplementedError()
 
     def _install_files(self):
-        for template in self.cfg.install_files:
-            instantiate(template, self.context_input(), self._install_target())
+
+        for install_file in self.cfg.install_files:
+            if isinstance(install_file, basestring):
+                if not os.path.isfile(install_file):
+                    raise ValueError("{} is not a file".format(install_file))
+                instantiate(
+                    install_file, self.context_input(), self._install_target(),
+                )
+            elif isinstance(install_file, tuple):
+                if len(install_file) != 2:
+                    raise ValueError(
+                        "Expected the the source filepath, or a (source, "
+                        "destination) pair; got {}".format(install_file)
+                    )
+                src, dst = install_file
+                instantiate(
+                    src, self.context_input(), dst,
+                )
 
     def _setup_file_logger(self, path):
         """

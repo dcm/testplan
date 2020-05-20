@@ -8,6 +8,7 @@ import platform
 import tempfile
 
 from testplan.common.utils.timing import wait
+from testplan.common.utils import path
 
 from testplan.testing.multitest.driver.app import App
 
@@ -81,13 +82,13 @@ def test_app_cwd(runpath):
 def test_app_logfile(runpath):
     """Test running an App that writes to a logfile."""
     app_dir = "AppDir"
-    logfile = "file.log"
+    logname = "file.log"
     app = App(
         name="App",
         binary="echo",
-        args=["hello", ">", os.path.join("AppDir", logfile)],
+        args=["hello", ">", os.path.join("AppDir", logname)],
         app_dir_name=app_dir,
-        logfile=logfile,
+        logname=logname,
         shell=True,
         runpath=runpath,
     )
@@ -101,7 +102,7 @@ def test_app_logfile(runpath):
 
 def test_extract_from_logfile(runpath):
     """Test extracting values from a logfile via regex matching."""
-    logfile = "file.log"
+    logname = "file.log"
     a = "1"
     b = "23a"
     message = "Value a={a} b={b}".format(a=a, b=b)
@@ -113,8 +114,8 @@ def test_extract_from_logfile(runpath):
     app = CustomApp(
         name="App",
         binary="echo",
-        args=[message, ">", logfile],
-        logfile=logfile,
+        args=[message, ">", logname],
+        logname=logname,
         log_regexps=log_regexps,
         shell=True,
         runpath=runpath,
@@ -127,7 +128,7 @@ def test_extract_from_logfile(runpath):
 def test_extract_from_logfile_with_appdir(runpath):
     """Test extracting values from a logfile within an app sub-directory."""
     app_dir = "AppDir"
-    logfile = "file.log"
+    logname = "file.log"
     a = "1"
     b = "23a"
     message = "Value a={a} b={b}".format(a=a, b=b)
@@ -139,9 +140,9 @@ def test_extract_from_logfile_with_appdir(runpath):
     app = CustomApp(
         name="App",
         binary="echo",
-        args=[message, ">", os.path.join("AppDir", logfile)],
+        args=[message, ">", os.path.join("AppDir", logname)],
         app_dir_name=app_dir,
-        logfile=logfile,
+        logname=logname,
         log_regexps=log_regexps,
         shell=True,
         runpath=runpath,
@@ -193,19 +194,21 @@ def test_install_files(runpath):
         re.compile(r".*command=(?P<command>.*)"),
         re.compile(r".*app_path=(?P<app_path>.*)"),
     ]
-    app = CustomApp(
-        name="App",
-        binary=binary,
-        pre_args=[sys.executable],
-        install_files=[config],
-        log_regexps=log_regexps,
-        shell=True,
-        runpath=runpath,
-    )
-    with app:
-        assert os.path.exists(app.extracts["binary"])
-        assert bool(json.loads(app.extracts["command"]))
-        assert os.path.exists(app.extracts["app_path"])
+    with path.TemporaryDirectory() as dst:
+        app = CustomApp(
+            name="App",
+            binary=binary,
+            pre_args=[sys.executable],
+            install_files=[config, (config, os.path.join(dst, "config.yaml"))],
+            log_regexps=log_regexps,
+            shell=True,
+            runpath=runpath,
+        )
+        with app:
+            assert os.path.exists(app.extracts["binary"])
+            assert bool(json.loads(app.extracts["command"]))
+            assert os.path.exists(app.extracts["app_path"])
+            assert os.path.exists(os.path.join(dst, "config.yaml"))
 
 
 def test_echo_hello(runpath):
