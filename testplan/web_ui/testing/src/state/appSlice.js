@@ -1,8 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit/dist/redux-toolkit.esm';
-import * as appHistoryActions  from './appHistory/actions';
-import withErrorEntry from './utils-detat/withErrorEntry';
-import { setSimplePayloadWithError } from './utils-detat/setStateSimple';
-import { setSimplePayload } from './utils-detat/setStateSimple';
+import { appRouterReducer } from './AppRouter';
+import { setIsDevel } from './AppRouter';
+import { setIsTesting } from './AppRouter';
 
 const __DEV__ = process.env.NODE_ENV !== 'production';
 const REACT_APP_API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -23,7 +22,7 @@ const API_CORS_HEADERS =
  */
 const appSlice = createSlice({
   name: 'app',
-  initialState: withErrorEntry({
+  initialState: {
     isTesting: false,
     isDevel: false,
     documentationURL: 'http://testplan.readthedocs.io/',
@@ -33,14 +32,17 @@ const appSlice = createSlice({
       'Accept': 'application/json',
       'Accept-Charset': 'utf-8',
     },
-  }),
+  },
+  reducers: {
+    router: appRouterReducer,
+  },
   extraReducers: {
-    /* eslint-disable max-len */
-    [appHistoryActions.setIsTesting.fulfilled]: setSimplePayload('isTesting'),
-    [appHistoryActions.setIsTesting.rejected]: setSimplePayloadWithError('isTesting'),
-    [appHistoryActions.setIsDevel.fulfilled]: setSimplePayload('isDevel'),
-    [appHistoryActions.setIsDevel.rejected]: setSimplePayloadWithError('isDevel'),
-    /* eslint-enable max-len */
+    [setIsDevel.type](state, action) {
+      state.isDevel = action.payload;
+    },
+    [setIsTesting.type](state, action) {
+      state.isTesting = action.payload;
+    }
   },
 });
 

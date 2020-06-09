@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import {NavItem} from 'reactstrap';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome/index.es';
 import {faBackspace} from '@fortawesome/free-solid-svg-icons';
 import {css} from 'aphrodite';
 

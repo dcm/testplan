@@ -1,11 +1,17 @@
 import appSlice from './appSlice';
-import * as appHistoryActions from './appHistory/actions';
-import ensureUnique from './utils-detat/ensureUnique';
+import { appRouterActions } from './AppRouter';
+
+export { setIsDevel } from './AppRouter';
+export { setIsTesting } from './AppRouter';
 
 export const {
-  setIsDevel,
-  setIsTesting
-} = ensureUnique(
-  appHistoryActions,
-  appSlice.actions,
-);
+  push: appRouterPush,
+  replace: appRouterReplace,
+  go: appRouterGo,
+  goBack: appRouterGoBack,
+  goForward: appRouterGoForward,
+} = appRouterActions;
+
+export const {  // eslint-disable-line no-empty-pattern
+
+} = appSlice.actions;

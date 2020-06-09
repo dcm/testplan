@@ -1,34 +1,42 @@
 import React from 'react';
 import NavItem from 'reactstrap/lib/NavItem';
-import { css } from 'aphrodite';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { css } from 'aphrodite/es';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome/index.es';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faBook } from '@fortawesome/free-solid-svg-icons';
+import connect from 'react-redux/es/connect/connect';
 
-import useReportState from '../hooks/useReportState';
+import { mkGetDocumentationURL } from '../../../state/appSelectors';
 import navStyles from '../../../Toolbar/navStyles';
 
 library.add(faBook);
 
-/**
- * Return the button which links to the documentation.
- * @returns {React.FunctionComponentElement}
- */
-export default function DocumentationButton() {
-  const [ docURL ] = useReportState('documentation.url.external', false);
-  return (
-    <NavItem>
-      <a href={docURL}
-         rel='noopener noreferrer'
-         target='_blank'
-         className={css(navStyles.buttonsBar)}
-      >
-        <FontAwesomeIcon key='toolbar-document'
-                         className={css(navStyles.toolbarButton)}
-                         icon={faBook.iconName}
-                         title='Documentation'
-        />
-      </a>
-    </NavItem>
-  );
-}
+const connector = connect(
+  () => {
+    const getDocsURL = mkGetDocumentationURL();
+    return state => ({
+      docsURL: getDocsURL(state),
+      docsIconName: faBook.iconName,
+      docsIconClasses: css(navStyles.toolbarButton),
+      docsAnchorClasses: css(navStyles.buttonsBar),
+    });
+  },
+);
+
+export default connector(({
+  docsURL, docsIconName, docsIconClasses, docsAnchorClasses
+}) => (
+  <NavItem>
+    <a href={docsURL}
+       rel='noopener noreferrer'
+       target='_blank'
+       className={docsAnchorClasses}
+    >
+      <FontAwesomeIcon key='toolbar-document'
+                       className={docsIconClasses}
+                       icon={docsIconName}
+                       title='Documentation'
+      />
+    </a>
+  </NavItem>
+));

@@ -1,25 +1,52 @@
 import React from 'react';
-import { useRouteMatch } from 'react-router-dom';
-
+import { withRouter } from 'react-router';
 import connect from 'react-redux/es/connect/connect';
-import { getDoAutoSelect } from '../state/uiSelectors';
+
+import { mkGetUIIsShowTags } from '../state/uiSelectors';
+import { setHashComponentAlias } from '../state/uiActions';
+import { setSelectedTestCase } from '../state/uiActions';
 import { BOTTOMMOST_ENTRY_CATEGORY } from '../../../Common/defaults';
 import { uriComponentCodec } from '../utils';
 import StyledListGroupItemLink from './StyledListGroupItemLink';
 import TagList from '../../../Nav/TagList';
 import NavEntry from '../../../Nav/NavEntry';
 
-export default ({ entry, idx, nPass, nFail, setPathComponentAlias, setSelectedTestCase }) => {
-  const { url } = useRouteMatch(),
-    { name, status, category, tags, uid } = entry,
-    [ isShowTags, [ setUriHashPathComponentAlias, setSelectedTestCase ] ] =
-      useReportState(
-        'app.batchReport.isShowTags',
-        [ 'setUriHashPathComponentAlias', 'setAppBatchReportSelectedTestCase' ],
-      ),
+const connector = connect(
+  () => {
+    const getIsShowTags = mkGetUIIsShowTags();
+    return state => ({
+      isShowTags: getIsShowTags(state),
+    });
+  },
+  {
+    setSelectedTestCase,
+    setHashComponentAlias,
+  },
+  (stateProps, dispatchProps, ownProps) => {
+    const { isShowTags } = stateProps;
+    const { setSelectedTestCase, setHashComponentAlias } = dispatchProps;
+    const { entry, idx, nPass, nFail, match: { url: matchedUrl } } = ownProps;
+    return {
+      isShowTags,
+      setSelectedTestCase,
+      setHashComponentAlias,
+      entry,
+      idx,
+      nPass,
+      nFail,
+      matchedUrl,
+    };
+  }
+);
+
+export default connector(withRouter(({
+  entry, idx, nPass, nFail, isShowTags, setHashComponentAlias,
+  setSelectedTestCase, matchedUrl
+}) => {
+  const { name, status, category, tags, uid } = entry,
     isBottommost = category === BOTTOMMOST_ENTRY_CATEGORY,
     encodedName = uriComponentCodec.encode(name),
-    nextPathname = isBottommost ? url : `${url}/${encodedName}`,
+    nextPathname = isBottommost ? matchedUrl : `${matchedUrl}/${encodedName}`,
     onClickOverride = !isBottommost ? {
       onClick() { setSelectedTestCase(null); },
     } : {
@@ -29,7 +56,7 @@ export default ({ entry, idx, nPass, nFail, setPathComponentAlias, setSelectedTe
         setSelectedTestCase(entry);
       },
     };
-  setUriHashPathComponentAlias(encodedName, name);
+  setHashComponentAlias(encodedName, name);
   return (
     <StyledListGroupItemLink key={uid}
                              dataUid={uid}
@@ -37,7 +64,11 @@ export default ({ entry, idx, nPass, nFail, setPathComponentAlias, setSelectedTe
                              pathname={nextPathname}
                              {...onClickOverride}
     >
-      {isShowTags && tags ? <TagList entryName={name} tags={tags}/> : null}
+      {
+        isShowTags && tags
+          ? <TagList entryName={name} tags={tags}/>
+          : null
+      }
       <NavEntry caseCountPassed={nPass}
                 caseCountFailed={nFail}
                 type={category}
@@ -46,4 +77,4 @@ export default ({ entry, idx, nPass, nFail, setPathComponentAlias, setSelectedTe
       />
     </StyledListGroupItemLink>
   );
-};
+}));

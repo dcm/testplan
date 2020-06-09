@@ -24,7 +24,7 @@ import FilterBox from "../Toolbar/FilterBox";
 import {STATUS, STATUS_CATEGORY} from "../Common/defaults";
 
 import {library} from '@fortawesome/fontawesome-svg-core';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome/index.es';
 
 import {
   faInfo,

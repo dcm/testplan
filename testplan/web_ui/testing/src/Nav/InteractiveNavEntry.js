@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Badge} from 'reactstrap';
 import {StyleSheet, css} from "aphrodite";
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome/index.es';
 import {
   faPlay,
   faRedo,

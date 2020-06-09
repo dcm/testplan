@@ -1,8 +1,8 @@
 import React from 'react';
 import connect from 'react-redux/es/connect/connect';
 import { createSelector } from '@reduxjs/toolkit/dist/redux-toolkit.esm';
-import { mkGetFilter } from '../../state/uiSelectors';
-import { mkGetSelectedTestCase } from '../../state/uiSelectors';
+import { mkGetUIFilter } from '../../state/uiSelectors';
+import { mkGetUISelectedTestCase } from '../../state/uiSelectors';
 import { mkGetReportDocument } from '../../state/reportSelectors';
 import AssertionPane from '../../../../AssertionPane/AssertionPane';
 import { COLUMN_WIDTH } from '../../../../Common/defaults';
@@ -12,9 +12,9 @@ const isNonemptyArray = v => Array.isArray(v) && v.length > 0;
 
 const connector = connect(
   () => {
-    const getFilter = mkGetFilter();
+    const getFilter = mkGetUIFilter();
     const getSelectedTestCase = createSelector(
-      mkGetSelectedTestCase(),
+      mkGetUISelectedTestCase(),
       tc => tc || {}
     );
     const getDocument = createSelector(
@@ -26,12 +26,15 @@ const connector = connect(
         filter: getFilter(state),
         selectedTestCase: getSelectedTestCase(state),
         document: getDocument(state),
+        leftWidth: `${(COLUMN_WIDTH || 0) + 1.5}`,
       };
     };
   },
 );
 
-export default connector(({ selectedTestCase, document, filter }) => {
+export default connector(({
+  selectedTestCase, document, filter, leftWidth
+}) => {
   const { uid: reportUID } = document;
   const { uid: testcaseUID, logs, entries, description } = selectedTestCase;
   const descriptionEntries = React.useMemo(
@@ -43,7 +46,7 @@ export default connector(({ selectedTestCase, document, filter }) => {
       <AssertionPane assertions={entries}
                      logs={logs}
                      descriptionEntries={descriptionEntries}
-                     left={`${(COLUMN_WIDTH || 0) + 1.5}`}
+                     left={leftWidth}
                      testcaseUid={testcaseUID}
                      filter={filter}
                      reportUid={reportUID}

@@ -1,42 +1,72 @@
 import React from 'react';
-import { useRouteMatch } from 'react-router-dom';
-import { css } from 'aphrodite';
+import { withRouter } from 'react-router';
+import { css } from 'aphrodite/es';
 import connect from 'react-redux/es/connect/connect';
-import { bindActionCreators } from 'redux/es/redux';
 
+import { setSelectedTestCase } from '../state/uiActions';
 import StyledNavLink from './StyledNavLink';
 import { CommonStyles, navBreadcrumbStyles } from '../style';
 import NavEntry from '../../../Nav/NavEntry';
 import { safeGetNumPassedFailedErrored } from '../utils';
-import { actionCreators } from '../state';
 
 const connector = connect(
-  null,
-  dispatch => bindActionCreators({
-    setSelectedTestCase: actionCreators.setAppBatchReportSelectedTestCase,
-  }, dispatch),
+  () => ({
+    linkClasses: css(
+      navBreadcrumbStyles.breadcrumbEntry,
+      CommonStyles.unselectable,
+    ),
+  }),
+  {
+    setSelectedTestCase,
+  },
+  (stateProps, dispatchProps, ownProps) => {
+    const { linkClasses } = stateProps;
+    const { setSelectedTestCase } = dispatchProps;
+    // `matchedUrl` is the matched Route, not necessarily the current URL
+    const {
+      entry: {
+        name: entryName,
+        status: entryStatus,
+        category: entryCategory,
+        counter: entryCounter,
+        uid: entryUid,
+      },
+      match: {
+        url: matchedUrl,
+      },
+    } = ownProps;
+    const [
+      numPassed,
+      numFailed
+    ] = safeGetNumPassedFailedErrored(entryCounter, 0);
+    return {
+      linkClasses,
+      entryName,
+      entryStatus,
+      entryCategory,
+      entryUid,
+      numPassed,
+      numFailed,
+      matchedUrl,
+      onClick: () => setSelectedTestCase(null),
+    };
+  }
 );
 
-export default connector(({ entry, setSelectedTestCase }) => {
-  const { name, status, category, counter, uid } = entry;
-  // this is the matched Route, not necessarily the current URL
-  const { url: matchedPath } = useRouteMatch();
-  const [ numPassed, numFailed ] = safeGetNumPassedFailedErrored(counter, 0);
-  return (
-    <StyledNavLink pathname={matchedPath}
-                   dataUid={uid}
-                   className={css(
-                     navBreadcrumbStyles.breadcrumbEntry,
-                     CommonStyles.unselectable,
-                   )}
-                   onClick={() => setSelectedTestCase(null)}
-    >
-      <NavEntry name={name}
-                status={status}
-                type={category}
-                caseCountPassed={numPassed}
-                caseCountFailed={numFailed}
-      />
-    </StyledNavLink>
-  );
-});
+export default connector(withRouter(({
+  linkClasses, entryName, entryStatus, entryCategory, entryUid,
+  numPassed, numFailed, matchedUrl, onClick,
+}) => (
+  <StyledNavLink pathname={matchedUrl}
+                 dataUid={entryUid}
+                 className={linkClasses}
+                 onClick={onClick}
+  >
+    <NavEntry name={entryName}
+              status={entryStatus}
+              type={entryCategory}
+              caseCountPassed={numPassed}
+              caseCountFailed={numFailed}
+    />
+  </StyledNavLink>
+)));

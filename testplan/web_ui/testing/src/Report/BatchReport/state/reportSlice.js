@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit/dist/redux-toolkit.esm';
-// import withErrorEntry from '../../../state/utils-detat/withErrorEntry';
 import * as Signals from './reportWorker/signals';
 import runFetch from './reportWorker/runFetch';
 import { hibit } from '../../../Common/utils';
@@ -26,16 +25,24 @@ const trimToByteHighs = stage => 0
 
 const setError = (state, meta, error) => {
   if(!isNil(error)) {
-    state._errors.push({ ...meta, error, stage: state.stage });
+    state._errors.push({
+      ...meta,
+      error,
+      stage: state.stage,
+    });
     state.lastFetchError = error;
   }
 };
 
-const INIT_PROGRESS = { loaded: 0, total: -1, lengthComputable: false };
+const INIT_PROGRESS = {
+  loaded: 0,
+  total: -1,
+  lengthComputable: false,
+};
 
 const reportSlice = createSlice({
   name: 'report',
-  initialState: /*withErrorEntry(*/{
+  initialState: {
     uid: null,
     document: {},
     stage: Signals.NEVERRAN,
@@ -50,7 +57,7 @@ const reportSlice = createSlice({
     proxyConfiguration: null,
     apiReportsSubpath: 'reports',
     _errors: [],
-  }/*)*/,
+  },
   reducers: {
     setDownloadProgress: {
       reducer(state, { payload, error, meta }) {
@@ -64,31 +71,58 @@ const reportSlice = createSlice({
       prepare({ lengthComputable, loaded, total }, error = null) {
         return {
           error,
-          payload: { lengthComputable, loaded, total },
-          meta: { time: Date.now() },
+          payload: {
+            lengthComputable,
+            loaded,
+            total,
+          },
+          meta: {
+            time: Date.now(),
+          },
         };
       }
     },
     setReportUID: {
-      reducer(state, action) { state.uid = action.payload; },
-      prepare(uid) { return { payload: uid }; },
+      reducer(state, action) {
+        state.uid = action.payload;
+      },
+      prepare(uid) {
+        return {
+          payload: uid,
+        };
+      },
     },
     setProxyConfiguration: {
-      reducer(state, action) { state.proxyConfiguration = action.payload; },
+      reducer(state, action) {
+        state.proxyConfiguration = action.payload;
+      },
+      // @ts-ignore
       prepare(host, port, { username = null, password = null }) {
         const payload = { host };
         if(typeof port === 'string') payload.port = parseInt(port);
-        if(username !== null && password !== null)
-          payload.auth = { username, password };
+        if(username !== null && password !== null) {
+          payload.auth = {
+            username,
+            password,
+          };
+        }
         return payload;
       }
     },
     setBasicAuthCredentials: {
       reducer(state, { payload: { username, password } }) {
-        state.basicAuthCredentials = { username, password };
+        state.basicAuthCredentials = {
+          username,
+          password,
+        };
       },
       prepare(username, password) {
-        return { payload: { username, password } };
+        return {
+          payload: {
+            username,
+            password,
+          },
+        };
       }
     },
     updateFetchStatus: {
@@ -97,7 +131,13 @@ const reportSlice = createSlice({
         setError(state, meta, error);
       },
       prepare(bitmask, error) {
-        return { payload: bitmask, error, meta: { time: Date.now() } };
+        return {
+          payload: bitmask,
+          error,
+          meta: {
+            time: Date.now(),
+          },
+        };
       },
     },
     setFetchStatus: {
@@ -106,7 +146,13 @@ const reportSlice = createSlice({
         setError(state, meta, error);
       },
       prepare(bitmask, error) { 
-        return { payload: bitmask, error, meta: { time: Date.now() } };
+        return {
+          payload: bitmask,
+          error,
+          meta: {
+            time: Date.now(),
+          },
+        };
       },
     },
     setDocument: {
@@ -115,22 +161,28 @@ const reportSlice = createSlice({
         setError(state, meta, error);
       },
       prepare(document, error) {
-        return { payload: document, error, meta: { time: Date.now() } };
+        return {
+          payload: document,
+          error,
+          meta: {
+            time: Date.now(),
+          },
+        };
       },
     },
   },
   extraReducers: {
-    [runFetch.pending](state, action) {
+    [runFetch.pending.type](state, action) {
       state.isFetching = true;
       state.fetchAttempts++;
       state.downloadProgress = INIT_PROGRESS;
     },
-    [runFetch.fulfilled](state, action) {
+    [runFetch.fulfilled.type](state, action) {
       state.isFetching = false;
       state.stage = trimToByteHighs(state.stage);
       state.lastFetchError = null;
     },
-    [runFetch.rejected](state, { meta, payload, error }) {
+    [runFetch.rejected.type](state, { meta, payload, error }) {
       state.isFetching = false;
       state.stage = trimToByteHighs(state.stage);
       setError(state, meta, error);

@@ -1,8 +1,6 @@
 import * as filterStates from './filterStates';
 import { isPlain } from '@reduxjs/toolkit/dist/redux-toolkit.esm';
 import equals from 'ramda/es/equals';
-import path from 'ramda/es/path';
-import { MAX_SIGNED_31_BIT_INT } from '../../../Common/utils';
 export { default as uriComponentCodec } from './uriComponentCodec';
 
 export const safeGetNumPassedFailedErrored = (counter, coalesceVal = null) =>
@@ -39,24 +37,3 @@ export function getChangedBitsCalculator(maskMap) {
     return matchedBits;
   };
 }
-
-export const getObservedBitsGetter = bitmaskMap => objectPath =>
-  objectPath === false
-    ? 0
-    : objectPath === undefined
-      ? MAX_SIGNED_31_BIT_INT
-      : (() => {
-          const objectPathArr =
-            typeof objectPath === 'string'
-              // eslint-disable-next-line no-useless-escape
-              ? objectPath.replace(/[\[\]]/g, '').split('.')
-              : objectPath;
-          path(objectPathArr, bitmaskMap).reduce(
-            function _inner(prev, curr) {
-              return prev | (
-                isPlain(curr)
-                  ? Object.values(curr).reduce(_inner, 0)
-                  : curr
-              );
-            }, 0);
-        })();

@@ -5,6 +5,7 @@ import { mkGetReportLastFetchError } from '../../state/reportSelectors';
 import Progress from 'reactstrap/lib/Progress';
 import connect from 'react-redux/es/connect/connect';
 import _debounce from 'lodash/debounce';
+
 import * as Signals from '../../state/reportWorker/signals';
 import Message from '../../../../Common/Message';
 import { humanReadableSize } from '../../../../Common/utils';
@@ -16,9 +17,7 @@ const FINISHED_MSG = 'Please select an entry.';
 const ERRORED_PREFIX_MSG = 'Error fetching Testplan report.';
 
 const MessageStyled = props => (
-  <Message left={`${COLUMN_WIDTH || 0}`}
-           {...props}
-  />
+  <Message left={`${COLUMN_WIDTH || 0}`} {...props}/>
 );
 
 const connector = connect(

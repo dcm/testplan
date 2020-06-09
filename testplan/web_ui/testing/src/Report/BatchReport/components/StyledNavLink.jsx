@@ -1,47 +1,52 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import connect from 'react-redux/es/connect/connect';
-import { actionTypes } from '../state';
-import { NavLink, useLocation } from 'react-router-dom';
-import { css } from 'aphrodite';
+import { NavLink } from 'react-router-dom';
+import { css } from 'aphrodite/es';
+
+import { getUIRouterSearch } from '../state/uiSelectors';
+import { mkGetUISelectedTestCase } from '../state/uiSelectors';
 import { navUtilsStyles } from '../style';
 
-const { APP_BATCHREPORT_SELECTED_TEST_CASE } = actionTypes;
 const connector = connect(
-  state => ({
-    selectedTestCase: state[APP_BATCHREPORT_SELECTED_TEST_CASE],
-  })
+  () => {
+    const getSelectedTestCase = mkGetUISelectedTestCase();
+    return state => ({
+      selectedTestCase: getSelectedTestCase(state),
+      uiRouterSearch: getUIRouterSearch(state),
+    });
+  },
+  null,
+  (stateProps, _, ownProps) => {
+    const { selectedTestCase, uiRouterSearch } = stateProps;
+    const { pathname, dataUid, style, ...props } = ownProps;
+    return {
+      style: style && typeof style === 'object' ? style : {
+        textDecoration: 'none',
+        color: 'currentColor',
+      },
+      linkedLocation: {
+        search: uiRouterSearch,
+        pathname: pathname.replace(/\/{2,}/g, '/'),
+      },
+      isActive: () => (
+        selectedTestCase &&
+        (typeof selectedTestCase === 'object') &&
+        selectedTestCase.uid === dataUid
+      ),
+      navButtonClasses: css(navUtilsStyles.navButtonInteract),
+      ...props,
+    };
+  },
 );
 
-const StyledNavLink = connector(({
-  style = { textDecoration: 'none', color: 'currentColor' },
-  isActive = () => false,  // this just makes it look better by default
-  pathname, dataUid, selectedTestCase, ...props
-}) => {
-  // ensure links always include the current query params
-  const { search } = useLocation();
-  // remove repeating slashes
-  const normPathname = pathname.replace(/\/{2,}/g, '/');
-  const to = { search, pathname: normPathname };
-  return (
-    <NavLink style={style}
-             data-uid={dataUid}
-             isActive={() =>
-               !!selectedTestCase &&
-               !!(selectedTestCase.uid) &&
-               selectedTestCase.uid === dataUid
-             }
-             activeClassName={css(navUtilsStyles.navButtonInteract)}
-             to={to}
-             {...props}
-    />
-  );
-});
-StyledNavLink.propTypes = {
-  pathname: PropTypes.string.isRequired,
-  dataUid: PropTypes.string.isRequired,
-  style: PropTypes.object,
-  isActive: PropTypes.func,
-};
-
-export default StyledNavLink;
+export default connector(({
+  style, linkedLocation, isActive, dataUid, navButtonClasses, ...props
+}) => (
+  <NavLink style={style}
+           data-uid={dataUid}
+           isActive={isActive}
+           activeClassName={navButtonClasses}
+           to={linkedLocation}
+           {...props}
+  />
+));

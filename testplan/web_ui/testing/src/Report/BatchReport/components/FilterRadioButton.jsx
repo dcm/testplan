@@ -2,45 +2,52 @@ import React from 'react';
 import DropdownItem from 'reactstrap/lib/DropdownItem';
 import Input from 'reactstrap/lib/Input';
 import Label from 'reactstrap/lib/Label';
-import { css } from 'aphrodite';
+import { css } from 'aphrodite/es';
 import connect from 'react-redux/es/connect/connect';
-import { bindActionCreators } from 'redux/es/redux';
 
+import { mkGetUIFilter } from '../state/uiSelectors';
+import { setFilter } from '../state/UIRouter';
 import navStyles from '../../../Toolbar/navStyles';
-import { actionTypes, actionCreators } from '../state';
 
-const { APP_BATCHREPORT_FILTER } = actionTypes;
 const connector = connect(
-  state => ({
-    filter: state[APP_BATCHREPORT_FILTER],
-  }),
-  dispatch => bindActionCreators({
-    setFilter: actionCreators.setAppBatchReportFilter,
-  }, dispatch),
+  () => {
+    const getFilter = mkGetUIFilter();
+    return state => ({
+      filter: getFilter(state),
+      dropdownItemClasses: css(navStyles.dropdownItem),
+      filterLabelClasses: css(navStyles.filterLabel),
+    });
+  },
+  {
+    setFilter
+  },
+  (stateProps, dispatchProps, ownProps) => {
+    const { filter, dropdownItemClasses, filterLabelClasses } = stateProps;
+    const { setFilter } = dispatchProps;
+    const { value, label } = ownProps;
+    return {
+      isChecked: filter === value,
+      onChange: evt => setFilter(evt.currentTarget.value),
+      value: value || '<none>',
+      label: label || '<none>',
+      dropdownItemClasses,
+      filterLabelClasses,
+    };
+  },
 );
 
-/**
- * Buttons used to set the filters. The placeholders "<none>" are meant to alert
- * the user / developer to an omission that should be fixed.
- * @param {Object} obj
- * @param {string} [obj.value="<none>"]
- * @param {string} [obj.label="<none>"]
- * @returns {React.FunctionComponentElement}
- */
-export default connector(
-  ({ filter, setFilter, value = '<none>', label = '<none>' }) => {
-    return (
-      <DropdownItem toggle={false} className={css(navStyles.dropdownItem)}>
-        <Label check className={css(navStyles.filterLabel)}>
-          <Input type='radio'
-                 name='filter'
-                 value={value}
-                 checked={filter === value}
-                 onChange={evt => setFilter(evt.currentTarget.value)}
-          />
-          {' ' + label}
-        </Label>
-      </DropdownItem>
-    );
-  }
-);
+export default connector(({
+  isChecked, onChange, value, label, dropdownItemClasses, filterLabelClasses,
+}) => (
+  <DropdownItem toggle={false} className={dropdownItemClasses}>
+    <Label check className={filterLabelClasses}>
+      <Input type='radio'
+             name='filter'
+             value={value}
+             checked={isChecked}
+             onChange={onChange}
+      />
+      {' ' + label}
+    </Label>
+  </DropdownItem>
+));

@@ -1,39 +1,54 @@
 import React from 'react';
 import NavItem from 'reactstrap/lib/NavItem';
-import { css } from 'aphrodite';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { css } from 'aphrodite/es';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome/index.es';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTags } from '@fortawesome/free-solid-svg-icons';
+import connect from 'react-redux/es/connect/connect';
 
-import useReportState from '../hooks/useReportState';
+import { mkGetUIIsShowTags } from '../state/uiSelectors';
+import { setShowTags } from '../state/UIRouter';
 import navStyles from '../../../Toolbar/navStyles';
 
 library.add(faTags);
 
-/**
- * Return the button which toggles the display of tags.
- * @returns {React.FunctionComponentElement}
- */
-export default function TagsButton() {
-  const [ isShowTags, setShowTags ] = useReportState(
-    'app.batchReport.isShowTags',
-    'setAppBatchReportIsShowTags',
-  );
-  const onClick = evt => {
-    evt.stopPropagation();
-    setShowTags(!isShowTags);
-  };
-  return (
-    <NavItem>
-      <div className={css(navStyles.buttonsBar)}>
-        <span onClick={onClick}>
-          <FontAwesomeIcon key='toolbar-tags'
-                           className={css(navStyles.toolbarButton)}
-                           icon={faTags.iconName}
-                           title='Toggle tags'
-          />
-        </span>
-      </div>
-    </NavItem>
-  );
-}
+const connector = connect(
+  () => {
+    const getIsShowTags = mkGetUIIsShowTags();
+    return state => ({
+      isShowTags: getIsShowTags(state),
+    });
+  },
+  {
+    setShowTags,
+  },
+  (stateProps, dispatchProps) => {
+    const { isShowTags } = stateProps;
+    const { setShowTags } = dispatchProps;
+    return {
+      buttonsBarClasses: css(navStyles.buttonsBar),
+      toolbarButtonClasses: css(navStyles.toolbarButton),
+      tagsIconName: faTags.iconName,
+      onClick: evt => {
+        evt.stopPropagation();
+        setShowTags(!isShowTags);
+      },
+    };
+  },
+);
+
+export default connector(({
+  onClick, buttonsBarClasses, toolbarButtonClasses, tagsIconName
+}) => (
+  <NavItem>
+    <div className={buttonsBarClasses}>
+      <span onClick={onClick}>
+        <FontAwesomeIcon key='toolbar-tags'
+                         className={toolbarButtonClasses}
+                         icon={tagsIconName}
+                         title='Toggle tags'
+        />
+      </span>
+    </div>
+  </NavItem>
+));

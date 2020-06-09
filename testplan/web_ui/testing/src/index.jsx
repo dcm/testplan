@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { lazy } from 'react';
 import ReactDOM from 'react-dom';
-import { Route, withRouter } from 'react-router';
+import { Route } from 'react-router';
 
 import { POLL_MS } from './Common/defaults';
 import SwitchRequireSlash from './Common/SwitchRequireSlash';

@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from 'react';
 import {library} from '@fortawesome/fontawesome-svg-core';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome/index.es';
 import {faFrown} from '@fortawesome/free-solid-svg-icons';
 
 import {css, StyleSheet} from 'aphrodite';

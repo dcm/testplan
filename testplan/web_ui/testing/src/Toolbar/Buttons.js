@@ -7,7 +7,7 @@ import {css} from 'aphrodite';
 import {NavItem} from 'reactstrap';
 
 import {library} from '@fortawesome/fontawesome-svg-core';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome/index.es';
 import {faClock} from '@fortawesome/free-solid-svg-icons';
 
 import styles from './navStyles';

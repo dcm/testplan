@@ -1,15 +1,23 @@
+import { appRouterSelectors } from './AppRouter';
 
-export const mkGetApiHeaders = () => state => state.app.apiHeaders;
+export const {
+  getLocation: getAppRouterLocation,
+  getAction: getAppRouterAction,
+  getRouter: getAppRouterRouter,
+  getSearch: getAppRouterSearch,
+  getHash: getAppRouterHash,
+  createMatchSelector: createAppRouterMatchSelector,
+} = appRouterSelectors;
+
+export const mkGetApiHeaders = () => st => st.app.apiHeaders;
 export const getApiHeaders = mkGetApiHeaders();
 
-export const mkGetApiBaseURL = () => state => state.app.apiBaseURL;
-export const getApiBaseURL = mkGetApiBaseURL();
+export const mkGetApiBaseURL = () => st => st.app.apiBaseURL;
 
-export const mkGetIsTesting = () => state => state.app.isTesting;
+export const mkGetIsTesting = () => st => st.app.isTesting;
 export const getIsTesting = mkGetIsTesting();
 
-export const mkGetIsDevel = () => state => state.app.isDevel;
+export const mkGetIsDevel = () => st => st.app.isDevel;
 export const getIsDevel = mkGetIsDevel();
 
-export const mkGetDocumentationURL = () => state => state.app.apiBaseURL;
-export const getDocumentationURL = mkGetDocumentationURL();
+export const mkGetDocumentationURL = () => st => st.app.apiBaseURL;

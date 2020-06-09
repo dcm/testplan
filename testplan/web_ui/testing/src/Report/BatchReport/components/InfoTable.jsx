@@ -1,58 +1,62 @@
 import React from 'react';
-import { css } from 'aphrodite';
+import { css } from 'aphrodite/es';
 import Table from 'reactstrap/lib/Table';
+import connect from 'react-redux/es/connect/connect';
 
-import useReportState from '../hooks/useReportState';
+import { mkGetReportDocument } from '../state/reportSelectors';
 import navStyles from '../../../Toolbar/navStyles';
 
-/**
- * Get the metadata from the report and render it as a table.
- * @returns {React.FunctionComponentElement}
- */
-export default function InfoTable() {
-  const [ jsonReport ] = useReportState('app.batchReport.jsonReport', false);
-  return React.useMemo(() => {
-    if(!(jsonReport && jsonReport.information)) {
-      return (
-        <table>
-          <tbody>
-          <tr>
-            <td>No information to display.</td>
-          </tr>
-          </tbody>
-        </table>
+const connector = connect(
+  () => {
+    const getReportDocument = mkGetReportDocument();
+    return state => ({
+      reportDocument: getReportDocument(state),
+      infoTableClasses: css(navStyles.infoTable),
+      infoTableKeyClasses: css(navStyles.infoTableKey),
+      infoTableValClasses: css(navStyles.infoTableValue),
+    });
+  },
+);
+
+export default connector(({
+  reportDocument, infoTableClasses, infoTableKeyClasses, infoTableValClasses,
+}) => React.useMemo(() => {
+  if(!(reportDocument && reportDocument.information)) {
+    return (
+      <table>
+        <tbody><tr><td>No information to display.</td></tr></tbody>
+      </table>
+    );
+  }
+  const infoList = reportDocument.information.map((item, i) => (
+    <tr key={`${i}`}>
+      <td className={infoTableKeyClasses}>{item[0]}</td>
+      <td className={infoTableValClasses}>{item[1]}</td>
+    </tr>
+  ));
+  if(reportDocument.timer && reportDocument.timer.run) {
+    if(reportDocument.timer.run.start) {
+      infoList.push(
+        <tr key='start'>
+          <td>start</td>
+          <td>{reportDocument.timer.run.start}</td>
+        </tr>,
       );
     }
-    const infoList = jsonReport.information.map((item, i) => (
-      <tr key={`${i}`}>
-        <td className={css(navStyles.infoTableKey)}>{item[0]}</td>
-        <td className={css(navStyles.infoTableValue)}>{item[1]}</td>
-      </tr>
-    ));
-    if(jsonReport.timer && jsonReport.timer.run) {
-      if(jsonReport.timer.run.start) {
-        infoList.push(
-          <tr key='start'>
-            <td>start</td>
-            <td>{jsonReport.timer.run.start}</td>
-          </tr>,
-        );
-      }
-      if(jsonReport.timer.run.end) {
-        infoList.push(
-          <tr key='end'>
-            <td>end</td>
-            <td>{jsonReport.timer.run.end}</td>
-          </tr>,
-        );
-      }
+    if(reportDocument.timer.run.end) {
+      infoList.push(
+        <tr key='end'>
+          <td>end</td>
+          <td>{reportDocument.timer.run.end}</td>
+        </tr>,
+      );
     }
-    return (
-      <Table bordered responsive={true} className={css(navStyles.infoTable)}>
-        <tbody>
-          {infoList}
-        </tbody>
-      </Table>
-    );
-  }, [ jsonReport ]);
-}
+  }
+  return (
+    <Table bordered responsive={true} className={infoTableClasses}>
+      <tbody>{infoList}</tbody>
+    </Table>
+  );
+}, [
+  infoTableClasses, infoTableKeyClasses, infoTableValClasses, reportDocument,
+]));

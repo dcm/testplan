@@ -2,8 +2,11 @@ import React from 'react';
 import equals from 'ramda/es/equals';
 import { css } from 'aphrodite/es';
 import { useLocation } from 'react-router-dom';
+import { withRouter } from 'react-router';
 import connect from 'react-redux/es/connect/connect';
-import PropTypes from 'prop-types';
+
+import { mkGetIsDevel } from '../../state/appSelectors';
+import { mkGetIsTesting } from '../../state/appSelectors';
 import CenterPane from './components/CenterPane';
 import Toolbar from './components/Toolbar';
 import UIRouter from './state/UIRouter';
@@ -12,10 +15,35 @@ import { batchReportStyles } from './style';
 import useFetchReport from './hooks/useFetchReport';
 import { queryStringToMap } from '../../Common/utils';
 
+const connector = connect(
+  () => {
+    const getIsDevel = mkGetIsDevel();
+    const getIsTesting = mkGetIsTesting();
+    return state => ({
+      isDevel: getIsDevel(state),
+      isTesting: getIsTesting(state),
+    });
+  },
+  {
 
-function BatchReportStartup({
-  browserProps, children, skipFetch = false
-}) {
+  },
+  (stateProps, dispatchProps, ownProps) => {
+    const { isDevel, isTesting } = stateProps;
+    const {  } = dispatchProps;
+    const { skipFetch, browserProps } = ownProps;
+    return {
+      isDevel,
+      isTesting,
+      skipFetch,
+      browserProps,
+      batchReportClasses: css(batchReportStyles.batchReport),
+    };
+  },
+);
+
+const BatchReport = connector(({
+  isDevel, isTesting, skipFetch, browserProps, batchReportClasses
+}) => {
   const
     currLocation = useLocation(),
     [, [ mapHashQueryToState, mapQueryToState ]] = useReportState(false, [
@@ -25,11 +53,7 @@ function BatchReportStartup({
       // `browserProps.location` may not exist during tests
       browserProps.location ? browserProps.location.search : ''
     ),
-    uriHashQueryMap = queryStringToMap(currLocation.search),
-    isDevelopment =
-      process.env.NODE_ENV === 'development' && !!uriQueryMap.dev,
-    isTesting =
-      process.env.NODE_ENV === 'test' && !!uriQueryMap.isTesting;
+    uriHashQueryMap = queryStringToMap(currLocation.search);
 
   // always sync on first render
   const isFirstRenderRef = React.useRef(true);
@@ -55,58 +79,35 @@ function BatchReportStartup({
 
   useFetchReport(
     browserProps.match.params.uid,
-    isDevelopment || isTesting,
+    isDevel || isTesting,
     skipFetch,
   );
 
-  return children;
-}
-BatchReportStartup.propTypes = {
-  browserProps: PropTypes.shape({
-    match: PropTypes.object,
-    location: PropTypes.object,
-    history: PropTypes.object,
-  }).isRequired,
-  children: PropTypes.element.isRequired,
-};
+  return (
+    <UIRouter>
+      <div className={batchReportClasses}>
+        <Toolbar/>
+        <NavPanes/>
+        <CenterPane/>
+      </div>
+    </UIRouter>
+  );
+});
 
-const connector = connect(
-
+const wrapperConnector = connect(
+  null,
+  null,
+  (_, __, ownProps) => {
+    const { match, location, history, skipFetch } = ownProps;
+    return {
+      skipFetch: skipFetch || false,
+      browserProps: { match, location, history },
+    };
+  }
 );
 
-export default function BatchReport(props) {
-  const { match, location, history, skipFetch,  } = props;
-  const browserProps = { match, location, history };
-  const className = css(batchReportStyles.batchReport);
-  return /*React.useMemo(() =>*/ (
-       <UIRouter>
-        <BatchReportStartup browserProps={browserProps} skipFetch={skipFetch}>
-          <div className={className}>
-            <Toolbar/>
-            <NavPanes/>
-            <CenterPane/>
-          </div>
-        </BatchReportStartup>
-       </UIRouter>
-  )/*, [ browserProps, skipFetch, className ])*/;
-}
-
-// let doPush = true;
-// const DummyNavigate = otherConnect(null, { push })(props => {
-//   if(doPush) {
-//     props.push('/a/b/c');
-//     doPush = false;
-//   }
-//   return null;
-// });
-//
-// export default function ParentBatchReport(props) {
-//   return (
-//     <OtherProvider>
-//       <OtherConnectedRouter>
-//         <DummyNavigate/>
-//         <BatchReport {...props} />
-//       </OtherConnectedRouter>
-//     </OtherProvider>
-//   );
-// }
+export default wrapperConnector(({ skipFetch, browserProps }) => (
+  <UIRouter>
+    <BatchReport browserProps={browserProps} skipFetch={skipFetch}/>
+  </UIRouter>
+));

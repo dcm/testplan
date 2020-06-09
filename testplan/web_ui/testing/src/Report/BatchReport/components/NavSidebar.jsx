@@ -1,9 +1,9 @@
 import React from 'react';
 import ListGroup from 'reactstrap/lib/ListGroup';
-import { css } from 'aphrodite';
-
+import { css } from 'aphrodite/es';
 import connect from 'react-redux/es/connect/connect';
-import { actionTypes } from '../state';
+
+import { mkGetUIFilter } from '../state/uiSelectors';
 import { isFilteredOut, safeGetNumPassedFailedErrored } from '../utils';
 import BoundStyledListGroupItemLink from './BoundStyledListGroupItemLink';
 import Column from '../../../Nav/Column';
@@ -11,14 +11,20 @@ import { COLUMN_WIDTH } from '../../../Common/defaults';
 import { navListStyles } from '../style';
 import EmptyListGroupItem from './EmptyListGroupItem';
 
-const { APP_BATCHREPORT_FILTER } = actionTypes;
 const connector = connect(
-  state => ({
-    filter: state[APP_BATCHREPORT_FILTER],
-  })
+  () => {
+    const getFilter = mkGetUIFilter();
+    return state => ({
+      filter: getFilter(state),
+      buttonListClasses: css(navListStyles.buttonList),
+      colWidthStr: `${COLUMN_WIDTH}`,
+    });
+  },
 );
 
-export default connector(({ entries, filter }) => {
+export default connector(({
+  entries, filter, buttonListClasses, colWidthStr
+}) => {
   const items = entries.map((entry, idx) => {
     const [
       nPass, nFail, nErr,
@@ -31,10 +37,10 @@ export default connector(({ entries, filter }) => {
                                     nFail={nFail}
       />
     );
-  }).filter(e => !!e);
+  }).filter(Boolean);
   return (
-    <Column width={`${COLUMN_WIDTH}`}>
-      <ListGroup className={css(navListStyles.buttonList)}>
+    <Column width={colWidthStr}>
+      <ListGroup className={buttonListClasses}>
         {items.length ? items : <EmptyListGroupItem/>}
       </ListGroup>
     </Column>
