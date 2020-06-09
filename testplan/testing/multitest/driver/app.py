@@ -6,6 +6,8 @@ import shutil
 import warnings
 import subprocess
 import datetime
+import platform
+import socket
 
 from schema import Or
 from past.builtins import basestring
@@ -18,6 +20,8 @@ from testplan.common.utils.process import kill_process
 from testplan.common.utils.logger import TESTPLAN_LOGGER
 
 from .base import Driver, DriverConfig
+
+IS_WIN = platform.system() == "Windows"
 
 
 class AppConfig(DriverConfig):
@@ -38,8 +42,8 @@ class AppConfig(DriverConfig):
             ConfigOption("shell", default=False): bool,
             ConfigOption("env", default=None): Or(None, dict),
             ConfigOption("binary_copy", default=False): bool,
-            ConfigOption("app_dir_name", default=None): Or(None, str),
-            ConfigOption("working_dir", default=None): Or(None, str),
+            ConfigOption("app_dir_name", default=None): Or(None, basestring),
+            ConfigOption("working_dir", default=None): Or(None, basestring),
         }
 
 
@@ -182,6 +186,18 @@ class App(Driver):
         """'etc' directory under runpath."""
         return self._etcpath
 
+    def _prepare_binary(self, path):
+        """prepare binary path"""
+        return path
+
+    @property
+    def hostname(self):
+        """
+        :return: hostname where the ETSApp is running
+        :rtype: ``str``
+        """
+        return socket.gethostname()
+
     def pre_start(self):
         """
         Create mandatory directories and install files from given templates
@@ -198,18 +214,15 @@ class App(Driver):
                 os.path.basename(self.cfg.binary), uuid.uuid4()
             )
 
-        self.binary = self.cfg.binary
-        if os.path.isfile(self.cfg.binary):
+        self.binary = self._prepare_binary(self.cfg.binary)
+        if os.path.isfile(self.binary):
             target = os.path.join(self._binpath, name)
             if self.cfg.binary_copy:
-                shutil.copyfile(self.cfg.binary, target)
+                shutil.copyfile(self.binary, target)
                 self.binary = target
-            else:
-                try:
-                    os.symlink(self.cfg.binary, target)
-                    self.binary = target
-                except AttributeError:
-                    pass
+            elif not IS_WIN:
+                os.symlink(os.path.abspath(self.binary), target)
+                self.binary = target
 
         makedirs(self.app_path)
         self.std = StdFiles(self.app_path)
