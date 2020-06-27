@@ -7,7 +7,7 @@ import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 import connect from 'react-redux/es/connect/connect';
 
 import { mkGetUIIsShowHelpModal } from '../state/uiSelectors';
-import { setShowHelpModal } from '../state/UIRouter';
+import { setShowHelpModal } from '../state/uiActions';
 import navStyles from '../../../Toolbar/navStyles';
 
 library.add(faQuestionCircle);

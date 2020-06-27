@@ -4,14 +4,20 @@ import { setFetchStatus } from '../reportActions';
 import { setReportUID } from '../reportActions';
 import { setDownloadProgress } from '../reportActions';
 import { updateFetchStatus } from '../reportActions';
+import * as reportActions from '../reportActions';
+
 import { getReportFetchTimeout } from '../reportSelectors';
 import { getReportUid } from '../reportSelectors';
 import { getReportAuthCredentials } from '../reportSelectors';
 import { getReportProxyConfiguration } from '../reportSelectors';
 import { getReportApiBaseURL } from '../reportSelectors';
+import * as reportSelectors from '../reportSelectors';
+
 import { getApiHeaders } from '../../../../state/appSelectors';
 import { getIsTesting } from '../../../../state/appSelectors';
 import { getIsDevel } from '../../../../state/appSelectors';
+import * as appSelectors from '../../../../state/appSelectors';
+
 import * as Signals from './signals';
 
 const isArr = v => Array.isArray(v);
@@ -24,7 +30,20 @@ const JUMP = 'JUMP';
 const END = 'END';
 const ABORT = 'ABORT';
 
-export async function threadBroker({ dispatch, getState, signal }) {
+export async function threadBroker({ dispatch, getState, signals }) {
+  try {
+
+    const { default: Thread } = await import('comlink-loader!./reportFetch');
+    const thread = new Thread();
+    dispatch(updateFetchStatus(Signals.THREAD_FETCH));
+
+
+  } catch(err) {
+
+  }
+}
+
+export async function _threadBroker({ dispatch, getState, signal }) {
   try {
     const { default: Thread } = await import('worker-loader!./reportFetch');
     const thread = new Thread();

@@ -1,16 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit/dist/redux-toolkit.esm';
 import withErrorEntry from '../../../state/utils-detat/withErrorEntry';
-import { uiRouterReducer } from './UIRouter';
 import * as filterStates from '../utils/filterStates';
-import { setShowTags } from './UIRouter';
-import { setShowInfoModal } from './UIRouter';
-import { setDoAutoSelect } from './UIRouter';
-import { setFilter } from './UIRouter';
-import { setDisplayEmpty } from './UIRouter';
-import { setShowHelpModal } from './UIRouter';
 
 /** This state slice contains information specific to how the UI should look */
-const uiSlice = createSlice({
+export default createSlice({
   name: 'ui',
   initialState: withErrorEntry({
     hashAliasToComponent: {},
@@ -24,7 +17,6 @@ const uiSlice = createSlice({
     doAutoSelect: true,
   }),
   reducers: {
-    router: uiRouterReducer,
     setHashComponentAlias: {
       reducer(state, { payload: aliasToComponentMap }) {
         for(const [ alias, component ] of Object.entries(aliasToComponentMap)) {
@@ -72,27 +64,64 @@ const uiSlice = createSlice({
         payload: message
       }),
     },
-  },
-  extraReducers: {
-    [setShowTags.type](state, action) {
-      state.isShowTags = !!action.payload;
+    setShowTags: {
+      reducer(state, { payload }) {
+        state.isShowTags = payload;
+      },
+      // @ts-ignore
+      prepare: (showTags = false) => ({
+        payload: !!showTags
+      }),
     },
-    [setShowInfoModal.type](state, action) {
-      state.isShowInfoModal = !!action.payload;
+    setShowInfoModal: {
+      reducer(state, { payload }) {
+        state.isShowInfoModal = payload;
+      },
+      // @ts-ignore
+      prepare: (showInfoModal = false) => ({
+        payload: !!showInfoModal
+      }),
     },
-    [setDoAutoSelect.type](state, action) {
-      state.doAutoSelect = !!action.payload;
+    setDoAutoSelect: {
+      reducer(state, { payload }) {
+        state.doAutoSelect = payload;
+      },
+      // @ts-ignore
+      prepare: (doAutoSelect = true) => ({
+        payload: !!doAutoSelect
+      }),
     },
-    [setFilter.type](state, action) {
-      state.filter = `${action.payload}`;
+    setFilter: {
+      reducer(state, { payload }) {
+        state.filter = payload;
+      },
+      // @ts-ignore
+      prepare: (filter = filterStates.ALL) => {
+        if(!(filter in Object.values(filterStates))) {
+          filter = filterStates.ALL;
+        }
+        return {
+          payload: `${filter}`
+        };
+      },
     },
-    [setDisplayEmpty.type](state, action) {
-      state.isDisplayEmpty = !!action.payload;
+    setDisplayEmpty: {
+      reducer(state, { payload }) {
+        state.isDisplayEmpty = payload;
+      },
+      // @ts-ignore
+      prepare: (displayEmpty = true) => ({
+        payload: !!displayEmpty
+      }),
     },
-    [setShowHelpModal.type](state, action) {
-      state.isShowHelpModal = !!action.payload;
+    setShowHelpModal: {
+      reducer(state, { payload }) {
+        state.isShowHelpModal = payload;
+      },
+      // @ts-ignore
+      prepare: (showHelpModal = false) => ({
+        payload: !!showHelpModal
+      }),
     },
   },
 });
-
-export default uiSlice;

@@ -1,7 +1,5 @@
 import reportSlice from './reportSlice';
 
-export { default as runFetch } from './reportWorker/runFetch';
-
 export const {
   setDownloadProgress,
   setReportUID,

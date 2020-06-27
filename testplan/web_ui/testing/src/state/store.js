@@ -4,11 +4,10 @@ import { getDefaultMiddleware } from '@reduxjs/toolkit/dist/redux-toolkit.esm';
 import { isImmutableDefault } from '@reduxjs/toolkit/dist/redux-toolkit.esm';
 import { setUseProxies } from 'immer/dist/immer.esm';
 import { enableMapSet } from 'immer/dist/immer.esm';
-
-// @ts-ignore
-import { routerMiddleware } from './utils-detat/createRouterComponents';
 import appSlice from './appSlice';
+import appMiddleware from './appMiddleware';
 import uiSlice from '../Report/BatchReport/state/uiSlice';
+import uiMiddleware from '../Report/BatchReport/state/uiMiddleware';
 import reportSlice from '../Report/BatchReport/state/reportSlice';
 
 const __DEV__ = process.env.NODE_ENV !== 'production';
@@ -23,9 +22,12 @@ const store = configureStore({
     report: reportSlice.reducer,
   },
   middleware: [
-    routerMiddleware,
+    appMiddleware,
+    uiMiddleware,
     ...getDefaultMiddleware({
-      thunk: { extraArgument: { } },
+      thunk: {
+        extraArgument: { },
+      },
       serializableCheck: __DEV__,
       immutableCheck: __DEV__ && {
         isImmutable: value =>
@@ -39,12 +41,23 @@ const store = configureStore({
 
 if (__DEV__ && module && module.hot) {
   module.hot.accept(
-    [ '../Report/BatchReport/state/uiSlice', './appSlice' ],
+    [
+      '../Report/BatchReport/state/uiSlice',
+      './appSlice',
+      '../Report/BatchReport/state/reportSlice'
+    ],
     () => {
       // eslint-disable-next-line max-len
-      const { default: { reducer: ui } } = require('../Report/BatchReport/state/uiSlice');
-      const { default: { reducer: app } } = require('./appSlice');
-      const newReducer = combineReducers({ app, ui });
+      const {
+        default: { reducer: ui }
+      } = require('../Report/BatchReport/state/uiSlice');
+      const {
+        default: { reducer: report }
+      } = require('../Report/BatchReport/state/reportSlice');
+      const {
+        default: { reducer: app }
+      } = require('./appSlice');
+      const newReducer = combineReducers({ app, ui, report });
       // @ts-ignore
       store.replaceReducer(newReducer);
     },

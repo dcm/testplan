@@ -25,6 +25,7 @@ const connector = connect(
     const getStage = mkGetReportFetchStage();
     const getError = mkGetReportLastFetchError();
     const getProgress = _debounce(mkGetReportDownloadProgress(), 100);
+    // const getProgress = mkGetReportDownloadProgress();
     return state => {
       const { loaded, total, lengthComputable } = getProgress(state);
       return {

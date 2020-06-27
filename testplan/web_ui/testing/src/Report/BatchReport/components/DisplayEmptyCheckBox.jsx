@@ -6,7 +6,7 @@ import { css } from 'aphrodite/es';
 import connect from 'react-redux/es/connect/connect';
 
 import { mkGetUIIsDisplayEmpty } from '../state/uiSelectors';
-import { setDisplayEmpty } from '../state/UIRouter';
+import { setDisplayEmpty } from '../state/uiActions';
 import navStyles from '../../../Toolbar/navStyles';
 
 const connector = connect(

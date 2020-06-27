@@ -3,6 +3,8 @@
 /* global globalThis */
 /* eslint-disable no-restricted-globals */
 /* eslint-env worker,browser */
+import Axios from 'axios/lib/core/Axios';
+const __DEV__ = process.env.NODE_ENV !== 'production';
 const IS_THREAD = self.constructor.name.endsWith('WorkerGlobalScope');
 const REPORT_UID_OVERRIDE = process.env.REACT_APP_REPORT_UID_OVERRIDE;
 const FAKE_REPORT_ASSERTIONS_RELPATH =
@@ -74,6 +76,386 @@ const isFunc = v => typeof v === 'function';
  * @property {function(object): void} setDocument
  * @property {function(object): void} setDownloadProgress
  */
+
+/**
+ * @typedef {object} FetcherExternalActions
+ * @property {function(object): object} setDocument
+ * @property {function(number): object} setFetchStatus
+ * @property {function(string): object} setReportUID
+ * @property {function(object): object} setDownloadProgress
+ * @property {function(number): object} updateFetchStatus
+ */
+
+/**
+ * @typedef {object} FetcherExternalSelectors
+ * @property {function(object): number} getReportFetchTimeout
+ * @property {function(object): string} getReportUid
+ * @property {function(object): object} getReportAuthCredentials
+ * @property {function(object): object} getReportProxyConfiguration
+ * @property {function(object): string} getReportApiBaseURL
+ * @property {function(object): object} getApiHeaders
+ * @property {function(object): boolean} getIsTesting
+ * @property {function(object): boolean} getIsDevel
+ */
+
+/**
+ * @typedef {object} FetcherSignals
+ * @property {number} ABORT_COMPLETE
+ * @property {number} UNKNOWN_ERROR
+ * @property {number} RESPONSE_RECEIVED
+ * @property {number} RESPONSE_PROCESSING
+ * @property {number} RESPONSE_PROCESSED
+ * @property {number} REQUEST_SENT
+ * @property {number} ABORT_STARTED
+ * @property {number} PROCESSING_ERROR
+ * @property {number} PROCESSING_COMPLETE
+ * @property {number} LOADING_FETCH_CONFIG
+ * @property {number} FETCH_STARTED
+ * @property {number} FETCH_ERROR
+ * @property {number} FETCH_CONFIG_LOADED
+ * @property {number} FETCH_COMPLETE
+ * @property {number} CLIENT_ERROR
+ * @property {number} THREAD_FETCH
+ * @property {number} SYNC_FETCH
+ * @property {number} STARTING
+ * @property {number} INIT
+ * @property {number} PROCESS_STAGE_MASK
+ * @property {number} ERROR_MASK
+ * @property {number} FETCH_STAGE_MASK
+ * @property {number} SETTINGS_MASK
+ * @property {number} ALL
+ * @property {number} NONE
+ */
+
+/**
+ * @template S
+ * @typedef {import("@reduxjs/toolkit").GetThunkAPI<S>} GetThunkAPI<S>
+ */
+
+// // eslint-disable-next-line no-unused-vars
+// let errorIfUndefined = (value, objName, propName) => value;
+// let validateConstructorObjects = ({ actions, selectors }) => {};
+// if(__DEV__) {
+//   class UndefinedPropertyError extends Error { }
+//   errorIfUndefined = (value, objName, propName) => {
+//     if(typeof value === 'undefined') throw new UndefinedPropertyError(
+//       `\`${objName}.${propName}\` cannot be undefined.`
+//     );
+//     return value;
+//   };
+//   validateConstructorObjects = ({ actions, selectors }) => {
+//     const reqdActions = [
+//       'setDocument',
+//       'setFetchStatus',
+//       'setReportUID',
+//       'setDownloadProgress',
+//       'updateFetchStatus',
+//     ];
+//     for(const action of reqdActions) {
+//       errorIfUndefined(actions[action], 'actions', action);
+//     }
+//     const reqdSelectors = [
+//       'getReportFetchTimeout',
+//       'getReportUid',
+//       'getReportAuthCredentials',
+//       'getReportProxyConfiguration',
+//       'getReportApiBaseURL',
+//       'getApiHeaders',
+//       'getIsTesting',
+//       'getIsDevel',
+//     ];
+//     for(const selector of reqdSelectors) {
+//       errorIfUndefined(selectors[selector], 'selectors', selector);
+//     }
+//   }
+// }
+
+let ensureDefined = (arg, name = '') => arg;
+if(__DEV__) {
+  ensureDefined = (arg, name) => {
+    if(typeof arg === 'undefined') {
+      throw new Error(`${name} is undefined`);
+    }
+    return arg;
+  };
+}
+
+class ReportFetchConfig {
+
+  _getReportProxyConfiguration = undefined;
+  get proxyConfiguration() {
+    return this._getReportProxyConfiguration(this._getState());
+  }
+  _getReportAuthCredentials = undefined;
+  get authCredentials() {
+    return this._getReportAuthCredentials(this._getState());
+  }
+  _getReportUid = undefined;
+  get reportUid() {
+    return this._getReportUid(this._getState());
+  }
+  _getReportFetchTimeout = undefined;
+  get fetchTimeout() {
+    return this._getReportFetchTimeout(this._getState());
+  }
+  _getIsDevel = undefined;
+  get isDevel() {
+    return this._getIsDevel(this._getState());
+  }
+  _getIsTesting = undefined;
+  get isTesting() {
+    return this._getIsTesting(this._getState());
+  }
+  _getReportApiBaseURL = undefined;
+  get apiBaseURL() {
+    return this._getReportApiBaseURL(this._getState());
+  }
+  _getApiHeaders = undefined;
+  get apiHeaders() {
+    return this._getApiHeaders(this._getState());
+  }
+
+  _dispatch = undefined;
+  _updateFetchStatus = undefined;
+  _LOADING_FETCH_CONFIG = undefined;
+  announceLoadingFetchConfig(err = null) {
+    const actionObj = this._updateFetchStatus(this._LOADING_FETCH_CONFIG, err);
+    return this._dispatch(actionObj);
+  }
+  _FETCH_CONFIG_LOADED = undefined;
+  announceFetchConfigLoaded(err = null) {
+    const actionObj = this._updateFetchStatus(this._FETCH_CONFIG_LOADED, err);
+    return this._dispatch(actionObj);
+  }
+  _FETCH_STARTED = undefined;
+  announceFetchStarted(err = null) {
+    const actionObj = this._updateFetchStatus(this._FETCH_STARTED, err);
+    return this._dispatch(actionObj);
+  }
+  _REQUEST_SENT = undefined;
+  announceRequestSent(err = null) {
+    const actionObj = this._updateFetchStatus(this._REQUEST_SENT, err);
+    return this._dispatch(actionObj);
+  }
+  _RESPONSE_RECEIVED = undefined;
+  announceResponseReceived(err = null) {
+    const actionObj = this._updateFetchStatus(this._RESPONSE_RECEIVED, err);
+    return this._dispatch(actionObj);
+  }
+  _FETCH_COMPLETE = undefined;
+  announceFetchComplete(err = null) {
+    const actionObj = this._updateFetchStatus(this._FETCH_COMPLETE, err);
+    return this._dispatch(actionObj);
+  }
+  _RESPONSE_PROCESSING = undefined;
+  announceResponseProcessing(err = null) {
+    const actionObj = this._updateFetchStatus(this._RESPONSE_PROCESSING, err);
+    return this._dispatch(actionObj);
+  }
+  _RESPONSE_PROCESSED = undefined;
+  announceResponseProcessed(err = null) {
+    const actionObj = this._updateFetchStatus(this._RESPONSE_PROCESSED, err);
+    return this._dispatch(actionObj);
+  }
+  _PROCESSING_COMPLETE = undefined;
+  announceProcessingComplete(err = null) {
+    const actionObj = this._updateFetchStatus(this._PROCESSING_COMPLETE, err);
+    return this._dispatch(actionObj);
+  }
+  _ABORT_COMPLETE = undefined;
+  announceAbort(err = null) {
+    const actionObj = this._updateFetchStatus(this._ABORT_COMPLETE, err);
+    return this._dispatch(actionObj);
+  }
+  _CLIENT_ERROR = undefined;
+  announceClientError(err = null) {
+    const actionObj = this._updateFetchStatus(this._CLIENT_ERROR, err);
+    return this._dispatch(actionObj);
+  }
+  _FETCH_ERROR = undefined;
+  announceFetchError(err = null) {
+    const actionObj = this._updateFetchStatus(this._FETCH_ERROR, err);
+    return this._dispatch(actionObj);
+  }
+  _PROCESSING_ERROR = undefined;
+  announceProcessingError(err = null) {
+    const actionObj = this._updateFetchStatus(this._PROCESSING_ERROR, err);
+    return this._dispatch(actionObj);
+  }
+
+  _setDocument = undefined;
+  setDocument(document, err = null) {
+    const actionObj = this._setDocument(document, err);
+    return this._dispatch(actionObj);
+  }
+
+  _setDownloadProgress = undefined;
+  setDownloadProgress(progressEvt, err = null) {
+    const { lengthComputable, loaded, total } = progressEvt;
+    const actionObj = this._setDownloadProgress(
+      { lengthComputable, loaded, total },
+      err,
+    );
+    return this._dispatch(actionObj);
+  }
+
+  cancelToken = undefined;
+
+  /**
+   * @param {object} props
+   * @param {FetcherExternalActions} props.actions
+   * @param {FetcherExternalSelectors} props.selectors
+   * @param {function(object): void} props.dispatch
+   * @param {function(): object} props.getState
+   * @param {Object.<string, number>} props.signals
+   */
+  constructor({ actions, selectors, signals, dispatch, getState }) {
+    this._getState = getState;
+    this._dispatch = dispatch;
+
+    this._getReportProxyConfiguration = selectors.getReportProxyConfiguration;
+    this._getReportAuthCredentials = selectors.getReportAuthCredentials;
+    this._getReportUid = selectors.getReportUid;
+    this._getReportFetchTimeout = selectors.getReportFetchTimeout;
+    this._getIsDevel = selectors.getIsDevel;
+    this._getIsTesting = selectors.getIsTesting;
+    this._getReportApiBaseURL = selectors.getReportApiBaseURL;
+    this._getApiHeaders = selectors.getApiHeaders;
+
+    this._updateFetchStatus = actions.updateFetchStatus;
+    this._setDocument = actions.setDocument;
+    this._setDownloadProgress = actions.setDownloadProgress;
+
+    this._LOADING_FETCH_CONFIG = signals.LOADING_FETCH_CONFIG;
+    this._FETCH_CONFIG_LOADED = signals.FETCH_CONFIG_LOADED;
+    this._FETCH_STARTED = signals.FETCH_STARTED;
+    this._REQUEST_SENT = signals.REQUEST_SENT;
+    this._RESPONSE_RECEIVED = signals.RESPONSE_RECEIVED;
+    this._FETCH_COMPLETE = signals.FETCH_COMPLETE;
+    this._RESPONSE_PROCESSING = signals.RESPONSE_PROCESSING;
+    this._RESPONSE_PROCESSED = signals.RESPONSE_PROCESSED;
+    this._PROCESSING_COMPLETE = signals.PROCESSING_COMPLETE;
+    this._ABORT_COMPLETE = signals.ABORT_COMPLETE;
+    this._CLIENT_ERROR = signals.CLIENT_ERROR;
+    this._FETCH_ERROR = signals.FETCH_ERROR;
+    this._PROCESSING_ERROR = signals.PROCESSING_ERROR;
+
+    this.cancelToken = Axios.CancelToken.source();
+  }
+}
+
+export class ReportFetch {
+
+  constructor({ actions, selectors, signals, thunkAPI }) {
+    this.config = new ReportFetchConfig({
+      actions, selectors, signals,
+      dispatch: thunkAPI.dispatch,
+      getState: thunkAPI.getState,
+    });
+    this._abortSignal = thunkAPI.signal;
+    this._abortSignal.addEventListener('abort', this.cleanup.bind(this));
+  }
+
+  async _loadFetchConfig() {
+    try {
+      this.config.announceLoadingFetchConfig();
+      const axiosInstance = Axios.create({
+        // https://github.com/axios/axios#request-config
+        baseURL: this.config.apiBaseURL,
+        timeout: this.config.fetchTimeout,
+        headers: this.config.apiHeaders,
+        cancelToken: this.config.cancelToken.token,
+        maxContentLength: Infinity,
+        auth: this.config.authCredentials,
+        proxy: this.config.proxyConfiguration,
+      });
+      this.config.announceFetchConfigLoaded();
+      return axiosInstance;
+    } catch(err) {
+      if(!Axios.isCancel(err)) {
+        this.config.announceClientError(err);
+      }
+      throw err;
+    }
+  }
+
+  async _fetchDocument(axiosInstance) {
+    try {
+      this.config.announceFetchStarted();
+      const response = await axiosInstance.request({
+        url: `/${this.config.reportUid}`,
+        method: 'GET',
+        params: {},
+        transformRequest: [
+          data => {
+            this.config.announceRequestSent();
+            return data;
+          },
+        ],
+        transformResponse: [
+          data => {
+            this.config.announceResponseReceived();
+            return data;
+          },
+        ],
+        onDownloadProgress: this.config.setDownloadProgress.bind(this.config),
+      });
+      this.config.announceFetchComplete();
+      return response;
+    } catch(err) {
+      if(!Axios.isCancel(err)) {
+        this.config.announceFetchError(err);
+      }
+      throw err;
+    }
+  }
+
+  async _processResponse(response) {
+    try {
+      this.config.announceResponseProcessing();
+      const report = response.data;
+      this.config.announceResponseProcessed();
+      this.config.setDocument(report);
+      this.config.announceProcessingComplete();
+    } catch(err) {
+      if(!Axios.isCancel(err)) {
+        this.config.announceProcessingError(err);
+      }
+      throw err;
+    }
+  }
+
+  async run() {
+    try {
+      const axiosInstance = await this._loadFetchConfig();
+      const response = await this._fetchDocument(axiosInstance);
+      await this._processResponse(response);
+    } catch(err) {
+      if(Axios.isCancel(err)) {
+        this.config.announceAbort(err);
+        await this.cleanup();
+      } else {
+        throw err;
+      }
+    }
+  }
+
+  async cleanup() {
+    try {
+      this.config.cancelToken.cancel();
+      this.config = null;
+    } catch(err) {
+
+    }
+  }
+
+  abort() {
+    if(!this._abortSignal.aborted) {
+      this._abortSignal.dispatchEvent(new Event('abort'));
+    }
+  }
+
+}
 
 /**
  * @param {FetchReportConfig} props

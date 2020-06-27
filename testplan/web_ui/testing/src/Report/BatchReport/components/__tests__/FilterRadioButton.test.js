@@ -4,7 +4,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { StyleSheetTestUtils } from 'aphrodite';
 import _shuffle from 'lodash/shuffle';
-import zip from 'ramda/es/zip';
+import _zip from 'lodash/zip';
 import { FilterRadioButton } from '../';
 import useReportState from '../../hooks/useReportState';
 
@@ -13,7 +13,7 @@ jest.mock('../../hooks/useReportState');
 const FILTER_RADIO_LABEL = 'FILTER_RADIO_LABEL';
 const AVAIL_FILTERS = [ 'a', 'b', 'c' ];
 const FILTER_VALUE_COMBOS = AVAIL_FILTERS.reduce(
-  (prev, filter) => prev.concat(zip(
+  (prev, filter) => prev.concat(_zip(
     /* value */ Array.from({ length: AVAIL_FILTERS.length }, () => filter),
     /* filter */ AVAIL_FILTERS,
   )),

@@ -1,7 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit/dist/redux-toolkit.esm';
-import { appRouterReducer } from './AppRouter';
-import { setIsDevel } from './AppRouter';
-import { setIsTesting } from './AppRouter';
 
 const __DEV__ = process.env.NODE_ENV !== 'production';
 const REACT_APP_API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -20,7 +17,7 @@ const API_CORS_HEADERS =
  * This state slice contains app-wide information that could be used in any
  * part of the app
  */
-const appSlice = createSlice({
+export default createSlice({
   name: 'app',
   initialState: {
     isTesting: false,
@@ -34,16 +31,23 @@ const appSlice = createSlice({
     },
   },
   reducers: {
-    router: appRouterReducer,
-  },
-  extraReducers: {
-    [setIsDevel.type](state, action) {
-      state.isDevel = action.payload;
+    setIsDevel: {
+      reducer(state, { payload }) {
+        state.isDevel = payload;
+      },
+      // @ts-ignore
+      prepare: (isDevel = false) => ({
+        payload: !!isDevel
+      }),
     },
-    [setIsTesting.type](state, action) {
-      state.isTesting = action.payload;
-    }
+    setIsTesting: {
+      reducer(state, { payload }) {
+        state.isTesting = payload;
+      },
+      // @ts-ignore
+      prepare: (isTesting = false) => ({
+        payload: !!isTesting
+      }),
+    },
   },
 });
-
-export default appSlice;

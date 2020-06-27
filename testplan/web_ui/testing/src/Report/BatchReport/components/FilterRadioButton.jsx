@@ -6,7 +6,7 @@ import { css } from 'aphrodite/es';
 import connect from 'react-redux/es/connect/connect';
 
 import { mkGetUIFilter } from '../state/uiSelectors';
-import { setFilter } from '../state/UIRouter';
+import { setFilter } from '../state/uiActions';
 import navStyles from '../../../Toolbar/navStyles';
 
 const connector = connect(

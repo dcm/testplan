@@ -1,13 +1,3 @@
-import { appRouterSelectors } from './AppRouter';
-
-export const {
-  getLocation: getAppRouterLocation,
-  getAction: getAppRouterAction,
-  getRouter: getAppRouterRouter,
-  getSearch: getAppRouterSearch,
-  getHash: getAppRouterHash,
-  createMatchSelector: createAppRouterMatchSelector,
-} = appRouterSelectors;
 
 export const mkGetApiHeaders = () => st => st.app.apiHeaders;
 export const getApiHeaders = mkGetApiHeaders();

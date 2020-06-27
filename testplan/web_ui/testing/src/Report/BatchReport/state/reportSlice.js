@@ -1,6 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit/dist/redux-toolkit.esm';
 import * as Signals from './reportWorker/signals';
-import runFetch from './reportWorker/runFetch';
+import { RUN_FETCH_PENDING_ACTION_TYPE } from './reportWorker/runFetch';
+import { RUN_FETCH_FULFILLED_ACTION_TYPE } from './reportWorker/runFetch';
+import { RUN_FETCH_REJECTED_ACTION_TYPE } from './reportWorker/runFetch';
 import { hibit } from '../../../Common/utils';
 
 /**
@@ -40,7 +42,26 @@ const INIT_PROGRESS = {
   lengthComputable: false,
 };
 
-const reportSlice = createSlice({
+/**
+ * Make an error serializable by extracting its important info.
+ * @param {Error | undefined | null} error
+ * @returns {undefined | null | { name: string; message: string; stack: string; }}
+ */
+function objectifyError(error) {
+  if(!(error instanceof Error)) {
+    if(error !== null || typeof error !== 'undefined') {
+      return null;
+    }
+    return error;
+  }
+  return {
+    name: error.name,
+    message: error.message,
+    stack: error.stack,
+  };
+}
+
+export default createSlice({
   name: 'report',
   initialState: {
     uid: null,
@@ -66,11 +87,11 @@ const reportSlice = createSlice({
       },
       /**
        * @param {ProgressEvent} evt
-       * @param {any} error
+       * @param {Error | null} error
        */
       prepare({ lengthComputable, loaded, total }, error = null) {
         return {
-          error,
+          error: objectifyError(error),
           payload: {
             lengthComputable,
             loaded,
@@ -133,7 +154,7 @@ const reportSlice = createSlice({
       prepare(bitmask, error) {
         return {
           payload: bitmask,
-          error,
+          error: objectifyError(error),
           meta: {
             time: Date.now(),
           },
@@ -148,7 +169,7 @@ const reportSlice = createSlice({
       prepare(bitmask, error) { 
         return {
           payload: bitmask,
-          error,
+          error: objectifyError(error),
           meta: {
             time: Date.now(),
           },
@@ -163,7 +184,7 @@ const reportSlice = createSlice({
       prepare(document, error) {
         return {
           payload: document,
-          error,
+          error: objectifyError(error),
           meta: {
             time: Date.now(),
           },
@@ -172,17 +193,17 @@ const reportSlice = createSlice({
     },
   },
   extraReducers: {
-    [runFetch.pending.type](state, action) {
+    [RUN_FETCH_PENDING_ACTION_TYPE](state, action) {
       state.isFetching = true;
       state.fetchAttempts++;
       state.downloadProgress = INIT_PROGRESS;
     },
-    [runFetch.fulfilled.type](state, action) {
+    [RUN_FETCH_FULFILLED_ACTION_TYPE](state, action) {
       state.isFetching = false;
       state.stage = trimToByteHighs(state.stage);
       state.lastFetchError = null;
     },
-    [runFetch.rejected.type](state, { meta, payload, error }) {
+    [RUN_FETCH_REJECTED_ACTION_TYPE](state, { meta, payload, error }) {
       state.isFetching = false;
       state.stage = trimToByteHighs(state.stage);
       setError(state, meta, error);
@@ -190,5 +211,3 @@ const reportSlice = createSlice({
     },
   },
 });
-
-export default reportSlice;

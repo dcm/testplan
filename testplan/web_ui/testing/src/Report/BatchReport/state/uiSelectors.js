@@ -1,17 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit/dist/redux-toolkit.esm';
-import { uiRouterSelectors } from './UIRouter';
 import { mkGetReportDocumentStatus } from './reportSelectors';
 import navStyles from '../../../Toolbar/navStyles';
 import { STATUS_CATEGORY } from '../../../Common/defaults';
-
-export const {
-  getLocation: getUIRouterLocation,
-  getAction: getUIRouterAction,
-  getRouter: getUIRouterRouter,
-  getSearch: getUIRouterSearch,
-  getHash: getUIRouterHash,
-  createMatchSelector: createUIRouterMatchSelector,
-} = uiRouterSelectors;
 
 export const mkGetUIHashAliasToComponent = () => st => st.hashAliasToComponent;
 

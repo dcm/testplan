@@ -7,7 +7,7 @@ import Button from 'reactstrap/lib/Button';
 import connect from 'react-redux/es/connect/connect';
 
 import { mkGetUIIsShowHelpModal } from '../state/uiSelectors';
-import { setShowHelpModal } from '../state/UIRouter';
+import { setShowHelpModal } from '../state/uiActions';
 
 const connector = connect(
   () => {

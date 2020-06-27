@@ -7,7 +7,7 @@ import Button from 'reactstrap/lib/Button';
 import connect from 'react-redux/es/connect/connect';
 
 import { mkGetUIIsShowInfoModal } from '../state/uiSelectors';
-import { setShowInfoModal } from '../state/UIRouter';
+import { setShowInfoModal } from '../state/uiActions';
 import InfoTable from './InfoTable';
 
 const connector = connect(

@@ -7,7 +7,7 @@ import { faTags } from '@fortawesome/free-solid-svg-icons';
 import connect from 'react-redux/es/connect/connect';
 
 import { mkGetUIIsShowTags } from '../state/uiSelectors';
-import { setShowTags } from '../state/UIRouter';
+import { setShowTags } from '../state/uiActions';
 import navStyles from '../../../Toolbar/navStyles';
 
 library.add(faTags);
