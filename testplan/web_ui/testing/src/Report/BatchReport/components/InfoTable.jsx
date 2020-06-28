@@ -2,7 +2,6 @@ import React from 'react';
 import { css } from 'aphrodite/es';
 import Table from 'reactstrap/lib/Table';
 import connect from 'react-redux/es/connect/connect';
-
 import { mkGetReportDocument } from '../state/reportSelectors';
 import navStyles from '../../../Toolbar/navStyles';
 

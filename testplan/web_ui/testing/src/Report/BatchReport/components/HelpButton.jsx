@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome/index.es';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 import connect from 'react-redux/es/connect/connect';
-
 import { mkGetUIIsShowHelpModal } from '../state/uiSelectors';
 import { setShowHelpModal } from '../state/uiActions';
 import navStyles from '../../../Toolbar/navStyles';

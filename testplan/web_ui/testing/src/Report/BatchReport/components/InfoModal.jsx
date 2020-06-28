@@ -5,7 +5,6 @@ import ModalBody from 'reactstrap/lib/ModalBody';
 import Modal from 'reactstrap/lib/Modal';
 import Button from 'reactstrap/lib/Button';
 import connect from 'react-redux/es/connect/connect';
-
 import { mkGetUIIsShowInfoModal } from '../state/uiSelectors';
 import { setShowInfoModal } from '../state/uiActions';
 import InfoTable from './InfoTable';

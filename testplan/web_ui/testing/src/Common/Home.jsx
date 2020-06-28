@@ -1,8 +1,8 @@
-import React from "react";
-import { Redirect, useLocation } from "react-router-dom";
+import React from 'react';
+import { Redirect, useLocation } from 'react-router-dom';
 
 const NoReport = () => (
-  <h1 style={{ color: "red" }}>NO TEST REPORT TO RENDER</h1>
+  <h1 style={{ color: 'red' }}>NO TEST REPORT TO RENDER</h1>
 );
 
 /**
@@ -16,18 +16,18 @@ const NoReport = () => (
 const DevHome = () => {
   const REPORT_UID_OVERRIDE = process.env.REACT_APP_REPORT_UID_OVERRIDE;
   const { search: query, hash} = useLocation();
-  if(typeof REPORT_UID_OVERRIDE !== "undefined") {
+  if(typeof REPORT_UID_OVERRIDE !== 'undefined') {
     // see CodeSandbox 'example.js' here:
     // https://reacttraining.com/react-router/web/example/query-parameters
     const dest = `/testplan/${REPORT_UID_OVERRIDE}${query}${hash}`;
-    console.log(`REACT_APP_REPORT_UID_OVERRIDE="${REPORT_UID_OVERRIDE}" ` +
-                `so redirecting to "${dest}"`);
+    console.log(`REACT_APP_REPORT_UID_OVERRIDE='${REPORT_UID_OVERRIDE}' ` +
+                `so redirecting to '${dest}'`);
     return <Redirect to={dest} />;
   } else {
     return (
       <>
         <NoReport/>
-        <h2 style={{ color: "green" }}>
+        <h2 style={{ color: 'green' }}>
           Set these environment variables before compiling:
           <ul>
             <li>
@@ -62,7 +62,7 @@ const ProdHome = () => (
 export default function Home() {
   return (
     <>
-      {process.env.NODE_ENV === "development" ? <DevHome /> : <ProdHome />}
+      {process.env.NODE_ENV === 'development' ? <DevHome /> : <ProdHome />}
     </>
   );
 }

@@ -1,7 +1,6 @@
 import React from 'react';
 import { withRouter } from 'react-router';
 import connect from 'react-redux/es/connect/connect';
-
 import { mkGetUIIsShowTags } from '../state/uiSelectors';
 import { setHashComponentAlias } from '../state/uiActions';
 import { setSelectedTestCase } from '../state/uiActions';

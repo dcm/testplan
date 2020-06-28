@@ -1,9 +1,5 @@
-import React from 'react';
-
-import {PropagateIndices} from "../reportUtils";
-
-const TESTPLAN_REPORT =
-  require('../../__tests__/mocks/documents/TESTPLAN_REPORT_1.json');
+import { PropagateIndices } from "../reportUtils";
+import { TESTPLAN_REPORT_1 } from '../../__tests__/documents';
 
 describe('Report/reportUtils', () => {
 
@@ -17,7 +13,7 @@ describe('Report/reportUtils', () => {
     let testplanEntries = {};
 
     beforeEach(() => {
-      report = PropagateIndices(TESTPLAN_REPORT);
+      report = PropagateIndices(TESTPLAN_REPORT_1);
       multitest = report.entries[0];
       suiteA = multitest.entries[0];
       suiteB = multitest.entries[1];

@@ -1,6 +1,4 @@
-/**
- * Constants used across the entire application.
- */
+/** Constants used across the entire application. */
 export const GREEN = '#228F1D';
 export const DARK_GREEN = '#1A721D';
 export const RED = '#A2000C';

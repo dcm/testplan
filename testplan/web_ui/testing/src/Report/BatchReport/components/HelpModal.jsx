@@ -5,7 +5,6 @@ import ModalBody from 'reactstrap/lib/ModalBody';
 import Modal from 'reactstrap/lib/Modal';
 import Button from 'reactstrap/lib/Button';
 import connect from 'react-redux/es/connect/connect';
-
 import { mkGetUIIsShowHelpModal } from '../state/uiSelectors';
 import { setShowHelpModal } from '../state/uiActions';
 

@@ -4,7 +4,6 @@ import Input from 'reactstrap/lib/Input';
 import Label from 'reactstrap/lib/Label';
 import { css } from 'aphrodite/es';
 import connect from 'react-redux/es/connect/connect';
-
 import { mkGetUIFilter } from '../state/uiSelectors';
 import { setFilter } from '../state/uiActions';
 import navStyles from '../../../Toolbar/navStyles';

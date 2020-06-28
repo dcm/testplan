@@ -2,10 +2,9 @@ import React from 'react';
 import { Route } from 'react-router';
 import { withRouter } from 'react-router';
 import connect from 'react-redux/es/connect/connect';
-
 import { mkGetUIHashComponentToAlias } from '../state/uiSelectors';
 import { setHashComponentAlias } from '../state/uiActions';
-import uriComponentCodec from '../utils/uriComponentCodec';
+import uriComponentCodec from '../../../Common/uriComponentCodec';
 import NavBreadcrumb from './NavBreadcrumb';
 
 const connector = connect(

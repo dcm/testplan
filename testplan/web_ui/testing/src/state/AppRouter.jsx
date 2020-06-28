@@ -1,6 +1,5 @@
 import React from 'react';
 import { createBrowserHistory } from 'history';
-// import { createAction } from '@reduxjs/toolkit/dist/redux-toolkit.esm';
 import { Router } from 'react-router';
 import ErrorCatch from '../Common/ErrorCatch';
 

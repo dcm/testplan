@@ -1,12 +1,14 @@
 import React from 'react';
-import { mkGetReportDownloadProgress } from '../../state/reportSelectors';
-import { mkGetReportFetchStage } from '../../state/reportSelectors';
-import { mkGetReportLastFetchError } from '../../state/reportSelectors';
 import Progress from 'reactstrap/lib/Progress';
 import connect from 'react-redux/es/connect/connect';
 import _debounce from 'lodash/debounce';
-
-import * as Signals from '../../state/reportWorker/signals';
+import _isObject from 'lodash/isObject';
+import {
+  mkGetReportDownloadProgress,
+  mkGetReportIsFetching,
+  mkGetReportLastFetchError,
+  mkGetReportDocument,
+} from '../../state/reportSelectors';
 import Message from '../../../../Common/Message';
 import { humanReadableSize } from '../../../../Common/utils';
 import { COLUMN_WIDTH } from '../../../../Common/defaults';
@@ -22,35 +24,29 @@ const MessageStyled = props => (
 
 const connector = connect(
   () => {
-    const getStage = mkGetReportFetchStage();
+    const getDocument = mkGetReportDocument();
+    const getIsFetching = mkGetReportIsFetching();
     const getError = mkGetReportLastFetchError();
     const getProgress = _debounce(mkGetReportDownloadProgress(), 100);
-    // const getProgress = mkGetReportDownloadProgress();
-    return state => {
-      const { loaded, total, lengthComputable } = getProgress(state);
-      return {
-        loaded, total,
-        hasProgress: !!lengthComputable,
-        stage: getStage(state),
-        error: getError(state),
-      };
-    };
+    return state => ({
+      progress: getProgress(state),
+      isFetching: getIsFetching(state),
+      error: getError(state),
+      document: getDocument(state),
+    });
   },
 );
 
-export default connector(({ stage, hasProgress, loaded, total, error }) => {
-  const fetchingProcessingBits = stage & (
-    Signals.FETCH_STAGE_MASK | Signals.PROCESS_STAGE_MASK
-  );
-  if(!!(stage & Signals.ERROR_MASK)) {
+export default connector(({ progress, isFetching, error, document }) => {
+  if(!isFetching && error) {
     const sfx = (typeof error === 'object' ? error.message : 0) || '';
     return (
       <MessageStyled message={`${ERRORED_PREFIX_MSG} ${sfx}`.trimRight()} />
     );
   }
-  if(fetchingProcessingBits > Signals.FETCH_STARTED) {
-    if(hasProgress) {
-      const pct = 100 * loaded / total;
+  if(isFetching) {
+    if(progress.lengthComputable) {
+      const pct = 100 * progress.loaded / progress.total;
       const color = pct > 99 ? 'success' : 'info';
       const pctStr = pct.toFixed(1).padStart(5);
       const MessageFilled = () => (
@@ -58,7 +54,11 @@ export default connector(({ stage, hasProgress, loaded, total, error }) => {
           <h1>{`${FETCHING_MSG} ${pctStr}%`}</h1>
           <Progress value={pct} color={color}>
             <span style={{ 'text-overflow': 'ellipsis' }}>
-              {`${humanReadableSize(loaded)} / ${humanReadableSize(total)}`}
+              {
+                `${humanReadableSize(progress.loaded)}` +
+                ` / ` +
+                `${humanReadableSize(progress.total)}`
+              }
             </span>
           </Progress>
         </>
@@ -67,7 +67,7 @@ export default connector(({ stage, hasProgress, loaded, total, error }) => {
     }
     return (<MessageStyled message={FETCHING_MSG}/>);
   }
-  if(fetchingProcessingBits >= Signals.PROCESSING_COMPLETE) {
+  if(!isFetching && !error && _isObject(document)) {
     return (<MessageStyled message={FINISHED_MSG}/>);
   }
   return (<MessageStyled message={STARTING_MSG}/>);

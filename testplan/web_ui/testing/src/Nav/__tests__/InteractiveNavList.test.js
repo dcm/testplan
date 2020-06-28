@@ -4,7 +4,7 @@ import {shallow} from 'enzyme';
 import {StyleSheetTestUtils} from "aphrodite";
 
 import InteractiveNavList from '../InteractiveNavList';
-import FakeInteractiveReport from '../../__tests__/fixtures/FakeInteractiveReport';
+import { FakeInteractiveReport } from '../../__tests__/documents';
 
 describe('InteractiveNavList', () => {
   beforeEach(() => {

@@ -1,31 +1,17 @@
-import URLParamRegistry from '../../../state/utils-detat/URLParamRegistry';
+import URLParamRegistry from '../../../Common/URLParamRegistry';
 import { uiHistory } from './UIRouter';
-import uiSlice from './uiSlice';
+import { setShowTags } from './uiActions';
+import { setShowInfoModal } from './uiActions';
+import { setDoAutoSelect } from './uiActions';
+import { setFilter } from './uiActions';
+import { setDisplayEmpty } from './uiActions';
+import { setShowHelpModal } from './uiActions';
 
-const uiParamRegistry = new URLParamRegistry(uiHistory);
-uiParamRegistry.registerBidirectionalListener(
-  'showTags',
-  uiSlice.actions.setShowTags
-);
-uiParamRegistry.registerBidirectionalListener(
-  'showInfoModal',
-  uiSlice.actions.setShowInfoModal
-);
-uiParamRegistry.registerBidirectionalListener(
-  'doAutoSelect',
-  uiSlice.actions.setDoAutoSelect
-);
-uiParamRegistry.registerBidirectionalListener(
-  'filter',
-  uiSlice.actions.setFilter
-);
-uiParamRegistry.registerBidirectionalListener(
-  'displayEmpty',
-  uiSlice.actions.setDisplayEmpty
-);
-uiParamRegistry.registerBidirectionalListener(
-  'showHelpModal',
-  uiSlice.actions.setShowHelpModal
-);
-
-export default uiParamRegistry.createMiddleware();
+export default new URLParamRegistry(uiHistory)
+  .registerBidirectionalListener('showTags', setShowTags)
+  .registerBidirectionalListener('showInfoModal', setShowInfoModal)
+  .registerBidirectionalListener('doAutoSelect', setDoAutoSelect)
+  .registerBidirectionalListener('filter', setFilter)
+  .registerBidirectionalListener('displayEmpty', setDisplayEmpty)
+  .registerBidirectionalListener('showHelpModal', setShowHelpModal)
+  .createMiddleware();

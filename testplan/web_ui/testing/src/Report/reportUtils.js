@@ -1,8 +1,7 @@
 /**
  * Report utility functions.
  */
-import React from "react";
-
+import React from 'react';
 import AssertionPane from '../AssertionPane/AssertionPane';
 import Message from '../Common/Message';
 
@@ -16,7 +15,7 @@ import Message from '../Common/Message';
  */
 function _mergeTags(tagsA, tagsB) {
   // Don't edit one of the objects in place, copy to new object.
-  let mergedTags = {};
+  const mergedTags = {};
   for (const tagName in tagsA) {
     if (tagsA.hasOwnProperty(tagName)) {
       mergedTags[tagName] = tagsA[tagName];
@@ -28,8 +27,8 @@ function _mergeTags(tagsA, tagsB) {
     if (tagsB.hasOwnProperty(tagName)) {
       const tags = tagsB[tagName];
       if (tagsA.hasOwnProperty(tagName)) {
-        let tagsArray = tags.concat(tagsA[tagName]);
-        let tagsSet = new Set(tagsArray);
+        const tagsArray = tags.concat(tagsA[tagName]);
+        const tagsSet = new Set(tagsArray);
         mergedTags[tagName] = [...tagsSet];
       } else {
         mergedTags[tagName] = tags;
@@ -61,7 +60,7 @@ const propagateIndicesRecur = (entries, parentIndices) => {
       name_type_index: new Set(),
     };
   }
-  let indices = {
+  const indices = {
     tags_index: {},
     name_type_index: new Set(),
     counter: {
@@ -70,8 +69,8 @@ const propagateIndicesRecur = (entries, parentIndices) => {
     },
   };
 
-  for (let entry of entries) {
-    let entryType = entry.category;
+  for (const entry of entries) {
+    const entryType = entry.category;
     // Initialize indices.
     let tagsIndex = {};
     const entryNameType = entry.name + '|' + entryType;
@@ -88,7 +87,7 @@ const propagateIndicesRecur = (entries, parentIndices) => {
 
     if (entryType !== 'testcase') {
       // Propagate indices to children.
-      let descendantsIndices = propagateIndicesRecur(
+      const descendantsIndices = propagateIndicesRecur(
         entry.entries,
         { tags_index: tags, name_type_index: nameTypeIndex }
       );
@@ -122,8 +121,8 @@ const propagateIndicesRecur = (entries, parentIndices) => {
  *   * name_type_index - its, its ancestors & its descendents names & types.
  *   * counter - number of passing & failing descendent testcases.
  *
- * @param {Array} report - A single Testplan report in an Array.
- * @returns {Array} - The Testplan report with indices, in an Array.
+ * @param {object} report - A single Testplan report.
+ * @returns {object[]} - The Testplan report with indices, in an Array.
  */
 const PropagateIndices = (report) => {
   propagateIndicesRecur([report], undefined);
@@ -134,7 +133,8 @@ const PropagateIndices = (report) => {
  * Return the updated state after a new entry is selected from the Nav
  * component.
  *
- * @param {Object} entry - Nav entry metadata.
+ * @param {object} state
+ * @param {object} entry - Nav entry metadata.
  * @param {number} depth - depth of Nav entry in Testplan report.
  * @public
  */
@@ -229,9 +229,8 @@ const GetCenterPane = (
   }
 };
 
-// eslint-disable   -next-line
 const formatDate = (date, fmt) => {
-  var o = {
+  const o = {
     "M+" : date.getMonth() + 1,
     "d+" : date.getDate(),
     "h+" : date.getHours(),
@@ -247,7 +246,7 @@ const formatDate = (date, fmt) => {
     );
   }
 
-  for (var k in o) {
+  for (const k in o) {
     if (new RegExp("(" + k + ")").test(fmt)) {
       fmt = fmt.replace(
         RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (
@@ -276,7 +275,7 @@ const getAssertions = (selectedEntries, displayTime) => {
 
   const selectedEntry = selectedEntries[selectedEntries.length - 1];
   if (selectedEntry && selectedEntry.category === 'testcase') {
-    let links = [];
+    const links = [];
     getAssertionsRecursively(links, selectedEntry.entries);
 
     // get time information of each assertion if needed

@@ -1,8 +1,5 @@
-/**
- * Common aphrodite styles.
- */
+/** Common aphrodite styles. */
 import {StyleSheet} from 'aphrodite';
-
 
 const Styles = StyleSheet.create({
   unselectable: {

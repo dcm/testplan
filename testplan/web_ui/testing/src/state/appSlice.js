@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createSlice } from '@reduxjs/toolkit/dist/redux-toolkit.esm';
 
 const __DEV__ = process.env.NODE_ENV !== 'production';
@@ -20,8 +21,9 @@ const API_CORS_HEADERS =
 export default createSlice({
   name: 'app',
   initialState: {
-    isTesting: false,
-    isDevel: false,
+    isTesting: process.env.NODE_ENV === 'test',
+    isDevel: process.env.NODE_ENV === 'development',
+    skipFetch: false,
     documentationURL: 'http://testplan.readthedocs.io/',
     apiBaseURL: API_BASE_URL.toString(),
     apiHeaders:  {
@@ -32,21 +34,21 @@ export default createSlice({
   },
   reducers: {
     setIsDevel: {
-      reducer(state, { payload }) {
-        state.isDevel = payload;
-      },
-      // @ts-ignore
+      reducer(state, { payload }) { state.isDevel = payload; },
       prepare: (isDevel = false) => ({
-        payload: !!isDevel
+        payload: __DEV__ ? !!isDevel : false,  // always false in production
       }),
     },
     setIsTesting: {
-      reducer(state, { payload }) {
-        state.isTesting = payload;
-      },
-      // @ts-ignore
+      reducer(state, { payload }) { state.isTesting = payload; },
       prepare: (isTesting = false) => ({
-        payload: !!isTesting
+        payload: __DEV__ ? !!isTesting : false,  // always false in production
+      }),
+    },
+    setSkipFetch: {
+      reducer(state, { payload }) { state.skipFetch = payload; },
+      prepare: (skipFetch = false) => ({
+        payload: __DEV__ ? !!skipFetch : false,  // always false in production
       }),
     },
   },

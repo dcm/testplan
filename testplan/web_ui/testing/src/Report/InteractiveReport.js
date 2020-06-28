@@ -1,3 +1,5 @@
+// @ts-nocheck
+/* eslint-disable @typescript-eslint/unbound-method */
 /**
  * InteractiveReport: Renders an Interactive report, which is used to control
  * test environments and run tests interactively. Requires the Testplan
@@ -11,7 +13,7 @@ import Toolbar from '../Toolbar/Toolbar.js';
 import { ResetButton } from '../Toolbar/InteractiveButtons';
 import InteractiveNav from '../Nav/InteractiveNav.js';
 import { INTERACTIVE_COL_WIDTH } from '../Common/defaults';
-import FakeInteractiveReport from '../__tests__/fixtures/FakeInteractiveReport';
+import { FakeInteractiveReport } from '../__tests__/documents';
 import {
   PropagateIndices,
   UpdateSelectedState,
@@ -371,8 +373,8 @@ class InteractiveReport extends React.Component {
    * Handle an environment toggle button being clicked on a Nav entry.
    *
    * @param {object} e - Click event
-   * @param {ReportNode} reportEntry - entry in the report whose environment
-   *                                   has been toggled.
+   * @param {object} reportEntry - entry in the report whose environment
+   *                               has been toggled.
    * @param {string} action - What action to take on the environment, expected
    *                          to be one of "start" or "stop".
    */

@@ -1,11 +1,11 @@
+// @ts-nocheck
 import { createSlice } from '@reduxjs/toolkit/dist/redux-toolkit.esm';
-import withErrorEntry from '../../../state/utils-detat/withErrorEntry';
-import * as filterStates from '../utils/filterStates';
+import * as filterStates from '../../../Common/filterStates';
 
 /** This state slice contains information specific to how the UI should look */
 export default createSlice({
   name: 'ui',
-  initialState: withErrorEntry({
+  initialState: {
     hashAliasToComponent: {},
     hashComponentToAlias: {},
     isShowHelpModal: false,
@@ -15,7 +15,7 @@ export default createSlice({
     isShowInfoModal: false,
     selectedTestCase: null,
     doAutoSelect: true,
-  }),
+  },
   reducers: {
     setHashComponentAlias: {
       reducer(state, { payload: aliasToComponentMap }) {
@@ -24,10 +24,7 @@ export default createSlice({
           state.hashComponentToAlias[component] = alias;
         }
       },
-      // @ts-ignore
-      prepare: aliasToComponentMap => ({
-        payload: aliasToComponentMap
-      }),
+      prepare: aliasToComponentMap => ({ payload: aliasToComponentMap }),
     },
     unsetHashComponentAliasByAlias: {
       reducer(state, { payload: aliases }) {
@@ -37,7 +34,6 @@ export default createSlice({
           delete state.hashAliasToComponent[_alias];
         }
       },
-      // @ts-ignore
       prepare: (aliases = []) => ({
         payload: Array.isArray(aliases) ? aliases : [ aliases ],
       }),
@@ -50,52 +46,28 @@ export default createSlice({
           delete state.hashComponentToAlias[_component];
         }
       },
-      // @ts-ignore
       prepare: (components = []) => ({
           payload: Array.isArray(components) ? components : [ components ],
       }),
     },
     setSelectedTestCase: {
-      reducer(state, { payload }) {
-        state.selectedTestCase = payload;
-      },
-      // @ts-ignore
-      prepare: message => ({
-        payload: message
-      }),
+      reducer(state, { payload }) { state.selectedTestCase = payload; },
+      prepare: message => ({ payload: message }),
     },
     setShowTags: {
-      reducer(state, { payload }) {
-        state.isShowTags = payload;
-      },
-      // @ts-ignore
-      prepare: (showTags = false) => ({
-        payload: !!showTags
-      }),
+      reducer(state, { payload }) { state.isShowTags = payload; },
+      prepare: (showTags = false) => ({ payload: !!showTags }),
     },
     setShowInfoModal: {
-      reducer(state, { payload }) {
-        state.isShowInfoModal = payload;
-      },
-      // @ts-ignore
-      prepare: (showInfoModal = false) => ({
-        payload: !!showInfoModal
-      }),
+      reducer(state, { payload }) { state.isShowInfoModal = payload; },
+      prepare: (showInfoModal = false) => ({ payload: !!showInfoModal }),
     },
     setDoAutoSelect: {
-      reducer(state, { payload }) {
-        state.doAutoSelect = payload;
-      },
-      // @ts-ignore
-      prepare: (doAutoSelect = true) => ({
-        payload: !!doAutoSelect
-      }),
+      reducer(state, { payload }) { state.doAutoSelect = payload; },
+      prepare: (doAutoSelect = true) => ({ payload: !!doAutoSelect }),
     },
     setFilter: {
-      reducer(state, { payload }) {
-        state.filter = payload;
-      },
-      // @ts-ignore
+      reducer(state, { payload }) { state.filter = payload; },
       prepare: (filter = filterStates.ALL) => {
         if(!(filter in Object.values(filterStates))) {
           filter = filterStates.ALL;
@@ -106,22 +78,12 @@ export default createSlice({
       },
     },
     setDisplayEmpty: {
-      reducer(state, { payload }) {
-        state.isDisplayEmpty = payload;
-      },
-      // @ts-ignore
-      prepare: (displayEmpty = true) => ({
-        payload: !!displayEmpty
-      }),
+      reducer(state, { payload }) { state.isDisplayEmpty = payload; },
+      prepare: (displayEmpty = true) => ({ payload: !!displayEmpty }),
     },
     setShowHelpModal: {
-      reducer(state, { payload }) {
-        state.isShowHelpModal = payload;
-      },
-      // @ts-ignore
-      prepare: (showHelpModal = false) => ({
-        payload: !!showHelpModal
-      }),
+      reducer(state, { payload }) { state.isShowHelpModal = payload; },
+      prepare: (showHelpModal = false) => ({ payload: !!showHelpModal }),
     },
   },
 });

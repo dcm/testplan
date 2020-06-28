@@ -8,11 +8,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome/index.es';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import connect from 'react-redux/es/connect/connect';
-
 import navStyles from '../../../Toolbar/navStyles';
 import FilterRadioButton from './FilterRadioButton';
 import DisplayEmptyCheckBox from './DisplayEmptyCheckBox';
-import * as filterStates from '../utils/filterStates';
+import * as filterStates from '../../../Common/filterStates';
 
 library.add(faFilter);
 

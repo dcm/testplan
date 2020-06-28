@@ -1,8 +1,10 @@
 /** @jest-environment node */
-import {
-  randomSamples, getPaths, reverseMap, filterObjectDeep,
-  deriveURLPathsFromReport,
-} from './fixtures/testUtils';
+import { randomSamples } from './testUtils';
+import { getPaths } from './testUtils';
+import { reverseMap } from './testUtils';
+import { filterObjectDeep } from './testUtils';
+import { deriveURLPathsFromReport } from './testUtils';
+import { TESTPLAN_REPORT_2 as REPORT } from './documents';
 
 describe('randomSamples', () => {
 
@@ -35,9 +37,8 @@ describe('randomSamples', () => {
 
 });
 
-const TESTPLAN_REPORT = require('./mocks/documents/TESTPLAN_REPORT_2.json');
 const TESTPLAN_REPORT_SLIM = filterObjectDeep(
-  TESTPLAN_REPORT,
+  REPORT,
   [ 'name', 'entries', 'category' ],
 );
 
@@ -322,7 +323,7 @@ describe('reverseMap', () => {
 
 describe('deriveURLPathsFromReport', () => {
 
-  const TESTPLAN_REPORT_1 = require('./mocks/documents/TESTPLAN_REPORT_1.json');
+  const TESTPLAN_REPORT_1 = require('./documents/TESTPLAN_REPORT_1.json');
 
   it('does the jsdoc example', () => {
     const aliasMap = new Map();

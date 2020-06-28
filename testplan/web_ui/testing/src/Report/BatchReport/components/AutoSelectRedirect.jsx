@@ -1,7 +1,6 @@
 import React from 'react';
 import { Redirect } from 'react-router';
 import connect from 'react-redux/es/connect/connect';
-
 import { mkGetUIDoAutoSelect } from '../state/uiSelectors';
 
 const connector = connect(

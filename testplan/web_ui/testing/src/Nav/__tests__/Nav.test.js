@@ -1,15 +1,12 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import { shallow } from 'enzyme';
 import {StyleSheetTestUtils} from "aphrodite";
-
 import Nav from '../Nav';
-
-const TESTPLAN_REPORT =
-  require('../../__tests__/mocks/documents/TESTPLAN_REPORT_1.json');
+import { TESTPLAN_REPORT_1 as REPORT } from '../../__tests__/documents';
 
 const defaultProps = {
-  report: TESTPLAN_REPORT,
-  selected: [TESTPLAN_REPORT],
+  report: REPORT,
+  selected: [REPORT],
 };
 
 describe('Nav', () => {

@@ -4,7 +4,6 @@ import Input from 'reactstrap/lib/Input';
 import DropdownItem from 'reactstrap/lib/DropdownItem';
 import { css } from 'aphrodite/es';
 import connect from 'react-redux/es/connect/connect';
-
 import { mkGetUIIsDisplayEmpty } from '../state/uiSelectors';
 import { setDisplayEmpty } from '../state/uiActions';
 import navStyles from '../../../Toolbar/navStyles';

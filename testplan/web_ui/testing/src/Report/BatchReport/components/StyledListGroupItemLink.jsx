@@ -2,7 +2,6 @@ import React from 'react';
 import ListGroupItem from 'reactstrap/lib/ListGroupItem';
 import { css } from 'aphrodite/es';
 import connect from 'react-redux/es/connect/connect';
-
 import StyledNavLink from './StyledNavLink';
 import { navUtilsStyles } from '../style';
 

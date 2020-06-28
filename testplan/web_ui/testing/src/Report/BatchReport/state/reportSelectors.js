@@ -1,46 +1,55 @@
 import { createSelector } from '@reduxjs/toolkit/dist/redux-toolkit.esm';
-import { mkGetApiBaseURL } from '../../../state/appSelectors';
-
-export const mkGetReportFetchStage = () => st => st.stage;
-
-export const mkGetReportFetchTimeout = () => st => st.fetchTimeout;
-export const getReportFetchTimeout = mkGetReportFetchTimeout();
-
-export const mkGetReportAuthCredentials = () => st => st.basicAuthCredentials;
-export const getReportAuthCredentials = mkGetReportAuthCredentials();
-
-export const mkGetReportProxyConfiguration = () => st => st.proxyConfiguration;
-export const getReportProxyConfiguration = mkGetReportProxyConfiguration();
-
-export const mkGetReportApiSubpath = () => st => st.apiReportsSubpath;
+import * as appSelectors from '../../../state/appSelectors';
 
 export const mkGetReportUid = () => st => st.uid;
 export const getReportUid = mkGetReportUid();
 
 export const mkGetReportDocument = () => st => st.document;
+export const getReportDocument = mkGetReportDocument();
 
-export const mkGetReportDocumentStatus = () => createSelector(
-  mkGetReportDocument(),
-  document => typeof document === 'object' ? document.status : null
-);
+export const mkGetReportIsFetching = () => st => st.report.isFetching;
+export const getReportIsFetching = mkGetReportIsFetching();
 
-export const mkGetReportFetchAttempts = () => st => st.fetchAttempts;
+export const mkGetReportIsFetchCancelled = () => st => {
+  return st.report.isFetchCancelled;
+};
+export const getReportIsFetchCancelled = mkGetReportIsFetchCancelled();
 
-export const mkGetReportIsFetching = () => st => st.isFetching;
+export const mkGetReportLastFetchError = () => st => st.report.fetchError;
+export const getReportLastFetchError = mkGetReportLastFetchError();
 
-export const mkGetReportLastFetchError = () => st => st.lastFetchError;
+export const mkGetReportMaxContentLength = () => st => {
+  return st.report.maxContentLength;
+};
+export const getReportMaxContentLength = mkGetReportMaxContentLength();
 
-export const mkGetReportReducerErrors = () => st => st._errors;
+export const mkGetReportFetchTimeout = () => st => st.report.fetchTimeout;
+export const getReportFetchTimeout = mkGetReportFetchTimeout();
 
-export const mkGetReportDownloadProgress = () => st => st.downloadProgress;
+export const mkGetReportDownloadProgress = () => st => {
+  return st.report.downloadProgress;
+};
+export const getReportDownloadProgress = mkGetReportDownloadProgress();
 
 export const mkGetReportApiBaseURL = () => createSelector(
-  mkGetApiBaseURL(),
-  mkGetReportApiSubpath(),
-  (baseURL, subpath) => {
+  appSelectors.mkGetApiBaseURL(),
+  baseURL => {
     const baseURLShaven = (baseURL || '').replace(/\/$/, '');
-    const subpathShaven = (subpath || '').replace(/^\//, '');
-    return new URL(`${baseURLShaven}/${subpathShaven}`).href;
+    return new URL(`${baseURLShaven}/reports`).href;
   }
 );
 export const getReportApiBaseURL = mkGetReportApiBaseURL();
+
+export const mkGetMaxContentLength = () => st => st.report.maxContentLength;
+export const getMaxContentLength = mkGetMaxContentLength();
+
+export const mkGetReportAxiosPartialConfig = () => createSelector(
+  appSelectors.getApiBaseURL,
+  getReportFetchTimeout,
+  appSelectors.getApiHeaders,
+  getMaxContentLength,
+  (baseURL, timeout, headers, maxContentLength) => ({
+    baseURL, timeout, headers, maxContentLength,
+  })
+);
+export const getReportAxiosPartialConfig = mkGetReportAxiosPartialConfig();

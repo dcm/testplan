@@ -2,7 +2,6 @@ import React from 'react';
 import { withRouter } from 'react-router';
 import { css } from 'aphrodite/es';
 import connect from 'react-redux/es/connect/connect';
-
 import { setSelectedTestCase } from '../state/uiActions';
 import StyledNavLink from './StyledNavLink';
 import { CommonStyles, navBreadcrumbStyles } from '../style';

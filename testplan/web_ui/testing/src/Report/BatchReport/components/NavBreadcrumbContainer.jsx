@@ -1,7 +1,6 @@
 import React from 'react';
 import { css } from 'aphrodite/es';
 import connect from 'react-redux/es/connect/connect';
-
 import { navBreadcrumbStyles } from '../style';
 
 const connector = connect(

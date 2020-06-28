@@ -2,7 +2,6 @@ import React from 'react';
 import ListGroup from 'reactstrap/lib/ListGroup';
 import { css } from 'aphrodite/es';
 import connect from 'react-redux/es/connect/connect';
-
 import { mkGetUIFilter } from '../state/uiSelectors';
 import { isFilteredOut, safeGetNumPassedFailedErrored } from '../utils';
 import BoundStyledListGroupItemLink from './BoundStyledListGroupItemLink';

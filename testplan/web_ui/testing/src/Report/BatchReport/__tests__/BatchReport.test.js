@@ -6,21 +6,17 @@ import { configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import { StyleSheetTestUtils } from 'aphrodite/es';
 import moxios from 'moxios';
-import { BrowserRouter, Route } from 'react-router-dom';
-
-import { ReportStateProvider, } from '../state';
+import { Route } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
+import { ReportStateProvider } from '../state';
 import { ReportStateContext } from '../state';
 import BatchReport from '../';
 import { UIRouter } from '../components';
 import Message from '../../../Common/Message';
 import { COLUMN_WIDTH } from '../../../Common/defaults';
 import SwitchRequireSlash from '../../../Common/SwitchRequireSlash';
-
-const TESTPLAN_REPORT =
-  require('../../../__tests__/mocks/documents/TESTPLAN_REPORT_1.json');
-
-const SIMPLE_REPORT =
-  require('../../../__tests__/mocks/documents/SIMPLE_REPORT.json');
+import { TESTPLAN_REPORT_1 } from '../../../__tests__/documents';
+import { SIMPLE_REPORT } from '../../../__tests__/documents';
 
 configure({ adapter: new Adapter() });
 
@@ -28,7 +24,7 @@ describe('BatchReport', () => {
 
   // this is only used to force a rerender of TestAppStateProvider by providing
   // different props each time
-  let dummyCounter = 0;
+  const dummyCounter = 0;
   class TestStateProvider extends React.Component {
     intercepted = {
       appState: null,
@@ -136,7 +132,7 @@ describe('BatchReport', () => {
     const batchReport = renderBatchReport({ skipFetch: true }),
       [, { setAppBatchReportJsonReport } ] = appStateAccessor();
     ReactTestUtils.act(
-      () => setAppBatchReportJsonReport(TESTPLAN_REPORT)
+      () => setAppBatchReportJsonReport(TESTPLAN_REPORT_1)
     );
     batchReport.update();
     expect(batchReport).toMatchSnapshot();
@@ -216,7 +212,7 @@ describe('BatchReport', () => {
       expect(request.url).toBe("/api/v1/reports/123");
       request.respondWith({
         status: 200,
-        response: TESTPLAN_REPORT,
+        response: TESTPLAN_REPORT_1,
       }).then(() => {
         batchReport.update();
         const selection = batchReport.state("selectedUIDs");

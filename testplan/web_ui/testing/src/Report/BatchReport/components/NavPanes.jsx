@@ -1,7 +1,6 @@
 import React from 'react';
 import { Route } from 'react-router';
 import connect from 'react-redux/es/connect/connect';
-
 import { mkGetReportIsFetching } from '../state/reportSelectors';
 import { mkGetReportLastFetchError } from '../state/reportSelectors';
 import { mkGetReportDocument } from '../state/reportSelectors';

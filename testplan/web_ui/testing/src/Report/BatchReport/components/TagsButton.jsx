@@ -15,9 +15,7 @@ library.add(faTags);
 const connector = connect(
   () => {
     const getIsShowTags = mkGetUIIsShowTags();
-    return state => ({
-      isShowTags: getIsShowTags(state),
-    });
+    return state => ({ isShowTags: getIsShowTags(state) });
   },
   {
     setShowTags,

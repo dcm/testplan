@@ -1,15 +1,11 @@
+import URLParamRegistry from '../Common/URLParamRegistry';
 import { appHistory } from './AppRouter';
-import appSlice from './appSlice';
-import URLParamRegistry from './utils-detat/URLParamRegistry';
+import { setIsDevel } from './appActions';
+import { setIsTesting } from './appActions';
+import { setSkipFetch } from './appActions';
 
-const appParamRegistry = new URLParamRegistry(appHistory);
-appParamRegistry.registerBidirectionalListener(
-  'isDevel',
-  appSlice.actions.setIsDevel
-);
-appParamRegistry.registerBidirectionalListener(
-  'isTesting',
-  appSlice.actions.setIsTesting
-);
-
-export default appParamRegistry.createMiddleware();
+export default new URLParamRegistry(appHistory)
+  .registerBidirectionalListener('isDevel', setIsDevel)
+  .registerBidirectionalListener('isTesting', setIsTesting)
+  .registerBidirectionalListener('skipFetch', setSkipFetch)
+  .createMiddleware();

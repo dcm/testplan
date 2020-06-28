@@ -2,14 +2,10 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { StyleSheetTestUtils } from "aphrodite";
 import moxios from 'moxios';
-
 import BatchReport from '../BatchReport';
 import Message from '../../Common/Message';
-
-const TESTPLAN_REPORT =
-  require('../../__tests__/mocks/documents/TESTPLAN_REPORT_1.json');
-const SIMPLE_REPORT =
-  require('../../__tests__/mocks/documents/SIMPLE_REPORT.json');
+import { TESTPLAN_REPORT_1 } from '../../__tests__/documents';
+import { SIMPLE_REPORT } from '../../__tests__/documents';
 
 describe('BatchReport', () => {
   const renderBatchReport = (uid = "123") => {
@@ -39,7 +35,7 @@ describe('BatchReport', () => {
 
   it('shallow renders the correct HTML structure when report loaded', () => {
     const batchReport = renderBatchReport();
-    batchReport.setState({ report: TESTPLAN_REPORT });
+    batchReport.setState({ report: TESTPLAN_REPORT_1 });
     batchReport.update();
     expect(batchReport).toMatchSnapshot();
   });
@@ -92,7 +88,7 @@ describe('BatchReport', () => {
       expect(request.url).toBe("/api/v1/reports/123");
       request.respondWith({
         status: 200,
-        response: TESTPLAN_REPORT,
+        response: TESTPLAN_REPORT_1,
       }).then(() => {
         batchReport.update();
         const selection = batchReport.state("selectedUIDs");
@@ -116,8 +112,8 @@ describe('BatchReport', () => {
         const expectedMessage = 'Error: Request failed with status code 404';
         expect(message.props().message).toEqual(expectedMessage);
         done();
-      })
-    })
+      });
+    });
   });
 
 });

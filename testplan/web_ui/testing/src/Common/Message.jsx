@@ -1,8 +1,20 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {StyleSheet, css} from 'aphrodite/es';
+import { StyleSheet, css } from 'aphrodite/es';
 
-import {MEDIUM_GREY} from "./defaults";
+import { MEDIUM_GREY } from './defaults';
+
+const styles = StyleSheet.create({
+  message: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    minHeight: '100vh',
+    color: MEDIUM_GREY,
+  },
+});
 
 /**
  * Displayed a message in the center of the container.
@@ -28,17 +40,5 @@ Message.propTypes = {
   /** How far left the container should be placed */
   left: PropTypes.string,
 };
-
-const styles = StyleSheet.create({
-  message: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    textAlign: 'center',
-    minHeight: '100vh',
-    color: MEDIUM_GREY,
-  },
-});
 
 export default Message;

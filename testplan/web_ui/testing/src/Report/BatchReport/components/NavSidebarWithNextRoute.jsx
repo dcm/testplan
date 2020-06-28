@@ -3,11 +3,10 @@ import { Redirect } from 'react-router';
 import { Route } from 'react-router';
 import { withRouter } from 'react-router';
 import connect from 'react-redux/es/connect/connect';
-
 import { setHashComponentAlias } from '../state/uiActions';
 import { BOTTOMMOST_ENTRY_CATEGORY } from '../../../Common/defaults';
 import { mkGetUIHashComponentToAlias } from '../state/uiSelectors';
-import uriComponentCodec from '../utils/uriComponentCodec';
+import uriComponentCodec from '../../../Common/uriComponentCodec';
 import NavSidebar from './NavSidebar';
 
 const connector = connect(

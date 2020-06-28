@@ -4,7 +4,6 @@ import Navbar from 'reactstrap/lib/Navbar';
 import Nav from 'reactstrap/lib/Nav';
 import Collapse from 'reactstrap/lib/Collapse';
 import connect from 'react-redux/es/connect/connect';
-
 import { mkGetUIToolbarStyle } from '../state/uiSelectors';
 import navStyles from '../../../Toolbar/navStyles';
 import FilterBox from '../../../Toolbar/FilterBox';

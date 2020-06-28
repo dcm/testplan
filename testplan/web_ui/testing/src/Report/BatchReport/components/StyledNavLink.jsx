@@ -3,17 +3,13 @@ import connect from 'react-redux/es/connect/connect';
 import { withRouter } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { css } from 'aphrodite/es';
-
 import { mkGetUISelectedTestCase } from '../state/uiSelectors';
 import { navUtilsStyles } from '../style';
 
 const connector = connect(
   () => {
     const getSelectedTestCase = mkGetUISelectedTestCase();
-    return state => ({
-      selectedTestCase: getSelectedTestCase(state),
-      // uiRouterSearch: getUIRouterSearch(state),
-    });
+    return state => ({ selectedTestCase: getSelectedTestCase(state) });
   },
   null,
   (stateProps, _, ownProps) => {

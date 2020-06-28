@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome/index.es';
 import { faPrint } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import connect from 'react-redux/es/connect/connect';
-
 import navStyles from '../../../Toolbar/navStyles';
 
 library.add(faPrint);

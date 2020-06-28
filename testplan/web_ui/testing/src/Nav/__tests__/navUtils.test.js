@@ -1,10 +1,6 @@
-import React from 'react';
 import {StyleSheetTestUtils} from "aphrodite";
-
 import {CreateNavButtons, GetSelectedUid} from '../navUtils';
-
-const TESTPLAN_REPORT =
-  require('../../__tests__/mocks/documents/TESTPLAN_REPORT_1.json');
+import { TESTPLAN_REPORT_1 as REPORT } from '../../__tests__/documents';
 
 describe('navUtils', () => {
 
@@ -27,11 +23,11 @@ describe('navUtils', () => {
         displayTime: false,
         displayEmpty: true,
         handleNavClick: jest.fn(),
-        entries: TESTPLAN_REPORT.entries,
+        entries: REPORT.entries,
         filter: null,
       }
       const createEntryComponent = jest.fn();
-      const selectedUid = TESTPLAN_REPORT.uid;
+      const selectedUid = REPORT.uid;
 
       const navButtons = CreateNavButtons(
         props, createEntryComponent, selectedUid
@@ -43,9 +39,9 @@ describe('navUtils', () => {
 
   describe('GetSelectedUid', () => {
     it('gets the selected UID', () => {
-      const selected = [TESTPLAN_REPORT];
+      const selected = [REPORT];
       const uid = GetSelectedUid(selected);
-      expect(uid).toBe(TESTPLAN_REPORT.uid);
+      expect(uid).toBe(REPORT.uid);
     });
   });
 
