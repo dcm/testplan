@@ -20,13 +20,15 @@ class TestTableEntry(object):
     @pytest.mark.parametrize(
         "value",
         (
-            tuple(),
             [],
-            None,
+            [[1, 2, 3]],
             [[1, 2, 3], [1, 2, 3]],
+            [{1: 1, 2: 2, 3: 3}],
+            [["foo", "bar"]],
             [["foo", "bar"], [1, 2], [3, 4]],
             [{"foo": 1, "bar": 2}, {"foo": 3, "bar": 4}],
         ),
     )
     def test_validation_success(self, value):
         TableEntry(value)
+

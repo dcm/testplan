@@ -14,25 +14,30 @@ class TableEntry(object):
     as a ``list`` of ``list`` or a ``list`` of ``dict``.
     """
 
-    def __init__(self, table):
-        self.table = self._validate_table(table or [])
-
-    @staticmethod
-    def _validate_table(table):
-        if isinstance(table, (list, tuple)):
-            if all_are(table, dict) or all_are(table, list, tuple):
-                return table
-        raise TypeError(
-            (
-                "`table` must be a list of"
-                " lists or list of dicts, got:\n{}".format(table)
+    def __init__(self, table=[]):
+        self.table = None
+        self._is_header_only = False
+        self._is_dict_table = False  # table contains dicts or lists only
+        if isinstance(table, list):
+            tbl_len = len(table)
+            self._is_header_only = tbl_len <= 1
+            if tbl_len == 0:
+                self.table = [[]]
+            elif all_are(table, list):
+                self.table = table
+            elif all_are(table, dict):
+                self._is_dict_table = True
+                self.table = table
+        if self.table is None:
+            raise TypeError(
+                (
+                    "`table` must be a list of only"
+                    " lists or list of only dicts, got:\n{}".format(table)
+                )
             )
-        )
 
     def __len__(self):
-        if not self.table:
-            return 0
-        elif isinstance(self.table[0], list):
+        if not self._is_dict_table:
             return len(self.table) - 1
         return len(self.table)
 
@@ -44,11 +49,9 @@ class TableEntry(object):
         :return: the column names
         :rtype: ``list`` of ``str``
         """
-        if isinstance(self.table[0], dict):
+        if self._is_dict_table:
             return self.table[0].keys()
-        else:
-            assert isinstance(self.table[0], list)
-            return self.table[0]
+        return self.table[0]
 
     @staticmethod
     def consolidate_columns(list_of_dict, placeholder="ABSENT"):
